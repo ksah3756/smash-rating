@@ -47,14 +47,14 @@ public class OAuth2LoginUserService extends DefaultOAuth2UserService {
             updateExistingMember(optionalMember, username, oAuth2UserInfo);
         }
 
-        MemberDto memberDto = MemberDto.of(
+        UserDto userDto = UserDto.of(
                 Role.ROLE_USER.toString(),
                 oAuth2UserInfo.getName(),
                 username,
                 ""
         );
 
-        return MemberPrinciple.create(memberDto);
+        return UserPrinciple.create(userDto);
     }
 
     private void updateExistingMember(Optional<User> optionalMember, String username, OAuth2UserInfo oAuth2UserInfo) {

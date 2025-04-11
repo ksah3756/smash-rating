@@ -9,26 +9,26 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-public class MemberPrinciple implements OAuth2User, UserDetails {
+public class UserPrinciple implements OAuth2User, UserDetails {
 
-    private MemberDto memberDto;
+    private UserDto userDto;
     private Map<String, Object> attributes;
 
-    private MemberPrinciple(MemberDto memberDto) {
-        this.memberDto = memberDto;
+    private UserPrinciple(UserDto userDto) {
+        this.userDto = userDto;
     }
 
-    private MemberPrinciple(MemberDto memberDto, Map<String, Object> attributes) {
-        this.memberDto = memberDto;
+    private UserPrinciple(UserDto userDto, Map<String, Object> attributes) {
+        this.userDto = userDto;
         this.attributes = attributes;
     }
 
-    public static MemberPrinciple create(MemberDto memberDto) {
-        return new MemberPrinciple(memberDto);
+    public static UserPrinciple create(UserDto userDto) {
+        return new UserPrinciple(userDto);
     }
 
-    public static MemberPrinciple create(MemberDto memberDto, Map<String, Object> attributes) {
-        return new MemberPrinciple(memberDto, attributes);
+    public static UserPrinciple create(UserDto userDto, Map<String, Object> attributes) {
+        return new UserPrinciple(userDto, attributes);
     }
 
     @Override
@@ -39,26 +39,26 @@ public class MemberPrinciple implements OAuth2User, UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> collection = new ArrayList<>();
-        collection.add(new SimpleGrantedAuthority(memberDto.role()));
+        collection.add(new SimpleGrantedAuthority(userDto.role()));
 
         return collection;
     }
 
     @Override
     public String getPassword() {
-        return memberDto.password();
+        return userDto.password();
     }
 
     @Override
     public String getName() {
-        return memberDto.name();
+        return userDto.name();
     }
 
     public String getUsername() {
-        return memberDto.username();
+        return userDto.username();
     }
 
     public String getRole() {
-        return memberDto.role();
+        return userDto.role();
     }
 }

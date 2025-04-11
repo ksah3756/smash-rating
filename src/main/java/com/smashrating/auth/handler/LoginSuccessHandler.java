@@ -1,7 +1,6 @@
 package com.smashrating.auth.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.smashrating.auth.dto.MemberPrinciple;
 import com.smashrating.auth.dto.TokenResponse;
 import com.smashrating.auth.jwt.JwtProvider;
 import jakarta.servlet.ServletException;

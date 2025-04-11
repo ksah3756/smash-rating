@@ -1,7 +1,7 @@
 package com.smashrating.auth.handler;
 
 import com.smashrating.auth.jwt.JwtProvider;
-import com.smashrating.auth.dto.MemberPrinciple;
+import com.smashrating.auth.dto.UserPrinciple;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,7 +23,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        MemberPrinciple oAuth2User = (MemberPrinciple) authentication.getPrincipal();
+        UserPrinciple oAuth2User = (UserPrinciple) authentication.getPrincipal();
 
         String accessToken = jwtProvider.generateAccessToken(authentication);
         String refreshToken = jwtProvider.generateRefreshToken(authentication);

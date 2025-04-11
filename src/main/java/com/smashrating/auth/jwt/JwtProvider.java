@@ -1,6 +1,6 @@
 package com.smashrating.auth.jwt;
 
-import com.smashrating.auth.dto.MemberPrinciple;
+import com.smashrating.auth.dto.UserPrinciple;
 import com.smashrating.auth.util.JwtUtils;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
@@ -37,12 +37,12 @@ public class JwtProvider {
     }
 
     public String generateAccessToken(Authentication authentication) {
-        MemberPrinciple principal = (MemberPrinciple) authentication.getPrincipal();
+        UserPrinciple principal = (UserPrinciple) authentication.getPrincipal();
         return generateToken(principal.getUsername(), ACCESS_TOKEN_EXP.getExp(), principal.getRole().toString());
     }
 
     public String generateRefreshToken(Authentication authentication) {
-        MemberPrinciple principal = (MemberPrinciple) authentication.getPrincipal();
+        UserPrinciple principal = (UserPrinciple) authentication.getPrincipal();
         return generateToken(principal.getUsername(), REFRESH_TOKEN_EXP.getExp(), principal.getRole().toString());
     }
 

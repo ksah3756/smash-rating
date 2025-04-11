@@ -1,4 +1,4 @@
-package com.smashrating.common.config;
+package com.smashrating.redis.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
