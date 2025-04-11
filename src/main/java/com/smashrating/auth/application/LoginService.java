@@ -17,7 +17,7 @@ public class LoginService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Member not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         UserDto userDto = UserDto.of(
                 user.getRole().toString(),

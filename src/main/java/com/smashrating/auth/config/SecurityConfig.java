@@ -8,6 +8,7 @@ import com.smashrating.auth.jwt.JwtProvider;
 import com.smashrating.auth.filter.JwtAuthenticationFilter;
 import com.smashrating.auth.handler.OAuth2AuthenticationSuccessHandler;
 import com.smashrating.auth.oauth2.service.OAuth2LoginUserService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -46,9 +47,15 @@ public class SecurityConfig {
                         corsConfigurer.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
+                .exceptionHandling(handler ->
+                        handler.authenticationEntryPoint((request, response, authException) -> {
+                            log.error("Unauthorized error: {}", authException.getMessage());
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());
+                        })
+                )
                 .formLogin(AbstractHttpConfigurer::disable) // UsernamePasswordAuthenticationFilter disable
-                .oauth2Login(oauth2 -> oauth2.userInfoEndpoint(
-                        userInfo -> userInfo.userService(oAuth2LoginUserService))
+                .oauth2Login(oauth2 ->
+                        oauth2.userInfoEndpoint(userInfo -> userInfo.userService(oAuth2LoginUserService))
                         .successHandler(oAuth2AuthenticationSuccessHandler)
                 )
                 .logout(AbstractHttpConfigurer::disable)
@@ -90,7 +97,7 @@ public class SecurityConfig {
     };
 
     private static final String[] PUBLIC_ENDPOINTS = {
-        "/member/register",
+        "/user/register",
     };
 
     CorsConfigurationSource corsConfigurationSource() {
@@ -103,9 +110,8 @@ public class SecurityConfig {
                     "http://localhost:8080"
             ));
             config.setAllowCredentials(true);
-            // 응답 헤더로 JWT, Set-Cookie 등을 읽기 위해
             config.setExposedHeaders(Arrays.asList("Authorization", "Set-Cookie"));
-            config.setMaxAge(3600L); // preflight 1시간 캐시
+            config.setMaxAge(3600L);
             return config;
         };
     }
@@ -130,7 +136,7 @@ public class SecurityConfig {
 
     private LoginFilter loginFilter() throws Exception {
         LoginFilter loginFilter = new LoginFilter();
-        loginFilter.setFilterProcessesUrl("/member/login");
+        loginFilter.setFilterProcessesUrl("/user/login");
         loginFilter.setAuthenticationSuccessHandler(new LoginSuccessHandler(jwtProvider));
         loginFilter.setAuthenticationManager(authenticationManager());
         return loginFilter;

@@ -56,7 +56,6 @@ public class RedisLeaderboardRepository implements LeaderboardRepository {
 
     @Override
     public List<RankEntry> getAllRankings(int page, int size) {
-        // Redis에서 모든 랭킹 가져오는 로직
         int start = (page - 1) * size;
         int end = start + size - 1;
         Set<ZSetOperations.TypedTuple<String>> rangeWithScores =

@@ -3,8 +3,6 @@ spring:
     active: oauth2
   config:
     import: optional:file:.env[.properties]
-#    activate:
-#      on-profile: dev
   application:
     name: smash_rating
   datasource:
@@ -34,6 +32,7 @@ spring:
       port: 6379
       password: ${REDIS_PASSWORD}
 
+
 springdoc:
   show-login-endpoint: true
 
@@ -43,6 +42,8 @@ jwt:
 
 server:
   port: ${PORT:8080}
+
+
 
 ---
 
