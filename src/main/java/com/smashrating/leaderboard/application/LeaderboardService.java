@@ -34,4 +34,9 @@ public class LeaderboardService {
                 })
                 .toList();
     }
+
+    public Double updateScore(String username, double score) {
+        leaderboardRepository.updateScore(username, score);
+        return leaderboardRepository.getScore(username);
+    }
 }
