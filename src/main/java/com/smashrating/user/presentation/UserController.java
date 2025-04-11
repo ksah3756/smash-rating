@@ -6,12 +6,14 @@ import com.smashrating.user.dto.UserCreateResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController
 @RequestMapping("/user")
+@Validated
 @RequiredArgsConstructor
 public class UserController {
 

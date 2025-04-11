@@ -1,5 +1,7 @@
 package com.smashrating.common.exception;
 
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.*;
@@ -13,6 +15,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @RestControllerAdvice
@@ -32,6 +35,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .body(createErrorResponse(errorCode));
     }
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleValidationException(ConstraintViolationException e) {
+        log.warn("ConstraintViolationException 예외 발생, msg:{}", e.getMessage());
+        ErrorCode errorCode = CommonErrorCode.VALIDATION_ERROR;
+        return ResponseEntity.status(HttpStatus.valueOf(errorCode.getStatus().value()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(createErrorResponse(errorCode, e.getMessage()));
+    }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
@@ -41,7 +52,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             WebRequest request) {
         log.warn("handleMethodArgumentNotValid 예외 발생, msg:{}", e.getMessage());
         ErrorCode errorCode = CommonErrorCode.INVALID_PARAMETER;
-        return ResponseEntity.status(HttpStatus.valueOf(errorCode.getStatus().value())).body(createErrorResponse(e, errorCode));
+        return ResponseEntity
+                .status(errorCode.getStatus())
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(createErrorResponse(e, errorCode));
     }
 
     @Override
