@@ -1,7 +1,6 @@
 package com.smashrating.leaderboard.application;
 
 import com.smashrating.auth.dto.UserPrinciple;
-import com.smashrating.leaderboard.LeaderboardRepository;
 import com.smashrating.leaderboard.dto.RankEntry;
 import com.smashrating.leaderboard.dto.RankResponse;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +25,10 @@ public class LeaderboardService {
         int startRank = (page - 1) * size + 1;
         List<RankEntry> pageRankings = leaderboardRepository.getAllRankings(page, size);
 
+        return getRankResponseList(pageRankings, startRank);
+    }
+
+    private static List<RankResponse> getRankResponseList(List<RankEntry> pageRankings, int startRank) {
         return IntStream.range(0, pageRankings.size())
                 .mapToObj(i -> {
                     RankEntry entry = pageRankings.get(i);

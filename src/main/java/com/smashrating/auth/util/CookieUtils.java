@@ -8,6 +8,8 @@ public class CookieUtils {
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         cookie.setMaxAge(expiry);
+//        cookie.setSecure(true);
+//        cookie.setAttribute("SameSite", "Strict");
 
         return cookie;
     }
