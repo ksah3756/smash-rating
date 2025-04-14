@@ -1,4 +1,4 @@
-package com.smashrating.leaderboard;
+package com.smashrating.leaderboard.presentation;
 
 import com.smashrating.auth.dto.UserPrinciple;
 import com.smashrating.leaderboard.application.LeaderboardService;

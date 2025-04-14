@@ -1,12 +1,11 @@
-package com.smashrating.leaderboard;
+package com.smashrating.leaderboard.infrastructure;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.smashrating.leaderboard.application.LeaderboardRepository;
 import com.smashrating.leaderboard.dto.RankEntry;
 import com.smashrating.user.exception.UserErrorCode;
 import com.smashrating.user.exception.UserException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Repository;
 

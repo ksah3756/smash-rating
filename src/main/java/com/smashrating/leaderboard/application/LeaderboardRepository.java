@@ -1,4 +1,4 @@
-package com.smashrating.leaderboard;
+package com.smashrating.leaderboard.application;
 
 import com.smashrating.leaderboard.dto.RankEntry;
 
