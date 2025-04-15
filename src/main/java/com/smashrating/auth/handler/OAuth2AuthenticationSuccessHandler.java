@@ -1,11 +1,8 @@
 package com.smashrating.auth.handler;
 
 import com.smashrating.auth.jwt.JwtProvider;
-import com.smashrating.auth.dto.UserPrinciple;
-import com.smashrating.auth.util.CookieExp;
-import com.smashrating.auth.util.CookieUtils;
+import com.smashrating.auth.enums.util.CookieExp;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-import static com.smashrating.auth.util.CookieUtils.createCookie;
+import static com.smashrating.auth.enums.util.CookieUtils.createCookie;
 
 @Component
 @RequiredArgsConstructor

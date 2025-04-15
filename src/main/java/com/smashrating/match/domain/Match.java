@@ -1,5 +1,7 @@
 package com.smashrating.match.domain;
 
+import com.smashrating.common.BaseEntity;
+import com.smashrating.match.enums.MatchStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -9,7 +11,7 @@ import lombok.*;
 @Builder
 @Getter
 @Entity
-public class Match {
+public class Match extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

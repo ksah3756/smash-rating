@@ -1,6 +1,7 @@
 package com.smashrating.auth.application;
 
 import com.smashrating.auth.dto.UserPrinciple;
+import com.smashrating.user.UserTestFactory;
 import com.smashrating.user.domain.Role;
 import com.smashrating.user.domain.User;
 import com.smashrating.user.infrastructure.UserRepository;
@@ -31,26 +32,18 @@ class LoginServiceTest {
     @Autowired
     private UserRepository userRepository;
 
-    private User user;
-
-    @BeforeEach
-    void setUp() {
-        user = User.create(
-                "testUser",
-                "testPassword",
-                "testName",
-                "testEmail@gmail.com",
-                Role.ROLE_USER
-        );
-        userRepository.save(user);
-    }
-
     @Test
     @DisplayName("성공적으로 사용자를 로드한다.")
     void loadUserByUsername_success() {
+        // given
+        User user = UserTestFactory.createDefaultUser();
+        userRepository.save(user);
+
+        // when
         String username = user.getUsername();
         UserPrinciple userPrinciple = (UserPrinciple) loginService.loadUserByUsername(username);
 
+        // then
         assertNotNull(userPrinciple);
         assertEquals(user.getUsername(), userPrinciple.getUsername());
         assertEquals(user.getPassword(), userPrinciple.getPassword());
@@ -61,8 +54,10 @@ class LoginServiceTest {
     @Test
     @DisplayName("사용자를 찾을 수 없을 때 예외를 던진다.")
     void loadUserByUsername_userNotFound() {
+        // given
         String username = "nonExistentUser";
 
+        // when
         Exception exception = assertThrows(UsernameNotFoundException.class, () -> {
             loginService.loadUserByUsername(username);
         });
@@ -70,6 +65,7 @@ class LoginServiceTest {
         String expectedMessage = "User not found";
         String actualMessage = exception.getMessage();
 
+        // then
         assertTrue(actualMessage.contains(expectedMessage));
     }
 }

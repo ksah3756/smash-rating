@@ -1,4 +1,4 @@
-package com.smashrating.auth.util;
+package com.smashrating.auth.enums.util;
 
 import jakarta.servlet.http.Cookie;
 

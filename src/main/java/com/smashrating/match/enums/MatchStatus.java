@@ -1,4 +1,4 @@
-package com.smashrating.match.domain;
+package com.smashrating.match.enums;
 
 public enum MatchStatus {
     PENDING,

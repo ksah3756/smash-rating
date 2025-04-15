@@ -1,7 +1,7 @@
 package com.smashrating.auth.jwt;
 
 import com.smashrating.auth.dto.UserPrinciple;
-import com.smashrating.auth.util.JwtUtils;
+import com.smashrating.auth.enums.util.JwtUtils;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 import java.time.Duration;
 import java.util.Date;
 
-import static com.smashrating.auth.jwt.TokenExp.ACCESS_TOKEN_EXP;
-import static com.smashrating.auth.jwt.TokenExp.REFRESH_TOKEN_EXP;
+import static com.smashrating.auth.enums.TokenExp.ACCESS_TOKEN_EXP;
+import static com.smashrating.auth.enums.TokenExp.REFRESH_TOKEN_EXP;
 
 @Component
 @RequiredArgsConstructor

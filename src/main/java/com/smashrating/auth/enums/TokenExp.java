@@ -1,4 +1,4 @@
-package com.smashrating.auth.jwt;
+package com.smashrating.auth.enums;
 
 import lombok.Getter;
 

@@ -1,4 +1,4 @@
-package com.smashrating.auth.util;
+package com.smashrating.auth.enums.util;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -3,6 +3,7 @@ package com.smashrating.user.implement;
 import com.smashrating.user.domain.Role;
 import com.smashrating.user.domain.User;
 import com.smashrating.user.infrastructure.UserRepository;
+import com.smashrating.user.UserTestFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,13 +36,7 @@ class UserValidatorTest {
     @DisplayName("유저 이름이 중복될 경우 true를 반환한다.")
     void isUsernameDuplicate_duplicate() {
         // given
-        User user = User.create(
-                "testUser",
-                "testPassword",
-                "testName",
-                "testEmail@gmail.com",
-                Role.ROLE_USER
-        );
+        User user = UserTestFactory.createDefaultUser();
 
         userRepository.save(user);
 
@@ -64,13 +59,7 @@ class UserValidatorTest {
     @DisplayName("유저 이름이 중복되지 않을 경우 false를 반환한다.")
     void isUsernameDuplicate_notDuplicate() {
         // given
-        User user = User.create(
-                "testUser",
-                "testPassword",
-                "testName",
-                "testEmail@gmail.com",
-                Role.ROLE_USER
-        );
+        User user = UserTestFactory.createDefaultUser();
 
         userRepository.save(user);
 

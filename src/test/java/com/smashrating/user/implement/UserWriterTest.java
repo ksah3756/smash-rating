@@ -1,7 +1,7 @@
 package com.smashrating.user.implement;
 
-import com.smashrating.user.domain.Role;
 import com.smashrating.user.domain.User;
+import com.smashrating.user.UserTestFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,13 +42,7 @@ class UserWriterTest {
     @DisplayName("비밀번호를 암호화하여 유저를 생성한다.")
     void createUser() {
         // given
-        User user = User.create(
-                "testUser",
-                "testPassword",
-                "testName",
-                "testEmail@gmail.com",
-                Role.ROLE_USER
-        );
+        User user = UserTestFactory.createDefaultUser();
 
         // when
         User savedUser = userWriter.createUser(user.getUsername(), user.getPassword(), user.getName(), user.getEmail());
