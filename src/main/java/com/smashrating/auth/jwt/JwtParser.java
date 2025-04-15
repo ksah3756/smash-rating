@@ -1,6 +1,6 @@
 package com.smashrating.auth.jwt;
 
-import com.smashrating.auth.util.JwtUtils;
+import com.smashrating.auth.enums.util.JwtUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -51,11 +51,8 @@ public class JwtParser {
     }
 
     private Set<SimpleGrantedAuthority> getRoles(String role) {
-        if (role.equals("HEADQUARTER")) {
-            return Collections.singleton(new SimpleGrantedAuthority("ROLE_HEADQUARTER"));
-        }
-        if (role.equals("STORE")) {
-            return Collections.singleton(new SimpleGrantedAuthority("ROLE_STORE"));
+        if (role.equals("ADMIN")) {
+            return Collections.singleton(new SimpleGrantedAuthority("ROLE_ADMIN"));
         }
         return Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
     }
@@ -63,10 +60,5 @@ public class JwtParser {
     public String getUsername(String token) {
         Claims claims = getClaims(token);
         return claims.get("username", String.class);
-    }
-
-    public String getStoreRole(String token) {
-        Claims claims = getClaims(token);
-        return claims.get("role", String.class);
     }
 }

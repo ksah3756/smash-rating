@@ -36,6 +36,4 @@ public class UserService {
         eventPublisher.publishEvent(UserCreatedEvent.of(savedUser.getUsername()));
         return UserCreateResponse.of(savedUser.getId());
     }
-
-
 }

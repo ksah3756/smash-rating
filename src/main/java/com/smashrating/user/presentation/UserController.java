@@ -6,16 +6,18 @@ import com.smashrating.user.dto.UserCreateResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController
-@RequestMapping("/member")
+@RequestMapping("/user")
+@Validated
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserService memberService;
+    private final UserService userService;
 
     @GetMapping("/my")
     public String myAPI() {
@@ -26,6 +28,6 @@ public class UserController {
     public ResponseEntity<UserCreateResponse> register(
             @RequestBody @Valid UserCreateRequest request
     ) {
-        return ResponseEntity.status(CREATED).body(memberService.createMember(request));
+        return ResponseEntity.status(CREATED).body(userService.createMember(request));
     }
 }

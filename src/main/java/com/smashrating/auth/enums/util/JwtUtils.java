@@ -1,4 +1,4 @@
-package com.smashrating.auth.util;
+package com.smashrating.auth.enums.util;
 
 import io.jsonwebtoken.security.Keys;
 import lombok.AllArgsConstructor;

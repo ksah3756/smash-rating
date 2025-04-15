@@ -1,19 +1,23 @@
-package com.smashrating.leaderboard;
+package com.smashrating.leaderboard.presentation;
 
 import com.smashrating.auth.dto.UserPrinciple;
 import com.smashrating.leaderboard.application.LeaderboardService;
-import com.smashrating.leaderboard.dto.RankEntry;
 import com.smashrating.leaderboard.dto.RankResponse;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
+@Validated
 @RequestMapping("/leaderboard")
 public class LeaderboardController {
     private final LeaderboardService leaderboardService;
@@ -25,9 +29,9 @@ public class LeaderboardController {
 
 
     @GetMapping("/all")
-    public ResponseEntity<RankResponse> getAllRank(
-            @RequestParam (defaultValue = "0") int page
+    public ResponseEntity<List<RankResponse>> getRankListByPage(
+            @RequestParam(defaultValue = "1") @Positive int page
     ) {
-        return ResponseEntity.ok().body(leaderboardService.getAllRank());
+        return ResponseEntity.ok().body(leaderboardService.getRankListByPage(page, 20));
     }
 }

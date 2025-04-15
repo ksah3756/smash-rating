@@ -1,0 +1,103 @@
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = "0.8.11"
+    reportsDirectory = layout.buildDirectory.dir('jacoco')
+}
+
+test {
+    useJUnitPlatform()
+
+    dependsOn testFixturesClasses
+    testClassesDirs += sourceSets.testFixtures.output.classesDirs
+    classpath += sourceSets.testFixtures.runtimeClasspath
+
+    finalizedBy 'jacocoTestReport'
+}
+
+jacocoTestReport {
+    dependsOn test
+
+    excludedClassFilesForReport(classDirectories)
+
+    executionData fileTree(dir: layout.buildDirectory, includes: [
+            "jacoco/test.exec", "jacoco/testFixtures.exec"
+    ])
+
+    reports {
+        xml.required = true
+        csv.required = false
+        html.required = true
+    }
+
+    finalizedBy 'jacocoTestCoverageVerification'
+}
+
+jacocoTestCoverageVerification {
+    dependsOn jacocoTestReport
+
+    excludedClassFilesForReport(classDirectories)
+
+    violationRules {
+        violationRules {
+            rule {
+                element = 'CLASS'
+                limit {
+                    counter = 'BRANCH'
+                    value = 'COVEREDRATIO'
+                    minimum = 0.00
+                }
+
+                limit {
+                    counter = 'LINE'
+                    value = 'COVEREDRATIO'
+                    minimum = 0.00
+                }
+
+                limit {
+                    counter = 'METHOD'
+                    value = 'COVEREDRATIO'
+                    minimum = 0.00
+                }
+            }
+
+            rule {
+                element = 'METHOD'
+
+                limit {
+                    counter = 'LINE'
+                    value = 'TOTALCOUNT'
+                    maximum = 100
+                }
+            }
+        }
+    }
+}
+
+private excludedClassFilesForReport(classDirectories) {
+    classDirectories.setFrom(
+            files(classDirectories.files.collect {
+                fileTree(dir: it, exclude: [
+                        "**/presentation/**",
+                        "**/infrastructure/**",
+                        "**/exception/**",
+                        "**/config/**",
+                        "**/aspect/**",
+                        "**/dto/**",
+                        "**/enums/**",
+                        "**/file/**",
+                        "**/oauth2/**",
+
+                        "**/*Config.class",
+                        "**/*Application.class",
+                        "**/*Exception.class",
+                        "**/*Handler.class",
+                        "**/*Interceptor.class",
+                        "**/*Filter.class",
+                        "**/*Dto.class",
+                        "**/*Status.class",
+                        "**/*Info.class"
+                ])
+            })
+    )
+}
