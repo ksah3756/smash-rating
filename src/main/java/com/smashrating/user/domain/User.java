@@ -1,6 +1,7 @@
 package com.smashrating.user.domain;
 
 import com.smashrating.common.BaseEntity;
+import com.smashrating.rating.domain.Rating;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -35,6 +36,12 @@ public class User extends BaseEntity {
     @NotNull
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @NotNull
+    private Double score;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Rating rating;
 
     public static User create(String username, String password, String name, String email, Role role) {
         return User.builder()

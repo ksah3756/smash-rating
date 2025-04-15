@@ -1,8 +1,10 @@
 package com.smashrating.auth.jwt;
 
 import com.smashrating.auth.enums.util.JwtUtils;
+import com.smashrating.auth.exception.AuthException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -10,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -60,18 +63,35 @@ class JwtParserTest {
 
     @Test
     @DisplayName("유효한 토큰이 주어지면 true를 반환한다.")
-    void validateToken_returnsTrueForValidToken() {
+    void validateToken_validToken() {
         // 유효한 토큰 생성: subject, username, role 값을 포함
-        boolean valid = jwtParser.validateToken(validUserToken);
-        assertThat(valid).isTrue();
+        jwtParser.validateToken(validUserToken);
     }
 
     @Test
-    @DisplayName("유효하지 않은 토큰이 주어지면 false를 반환한다.")
-    void validateToken_returnsFalseForInvalidToken() {
+    @DisplayName("유효하지 않은 토큰이 주어지면 예외를 던진다.")
+    void validateToken_invalidToken() {
         // 의미없는 토큰 문자열
-        boolean valid = jwtParser.validateToken(invalidToken);
-        assertThat(valid).isFalse();
+        Assertions.assertThatThrownBy(() -> jwtParser.validateToken(invalidToken))
+                        .isInstanceOf(AuthException.class)
+                        .hasMessageContaining("Invalid token");
+    }
+
+    @Test
+    @DisplayName("만료된 토큰이 주어지면 예외를 던진다.")
+    void validateToken_expiredToken() {
+        // 만료된 토큰 생성
+        String expiredToken = Jwts.builder()
+                .subject("testUser")
+                .claim("username", "testUser")
+                .claim("role", "USER")
+                .expiration(new Date(System.currentTimeMillis() - 1000)) // 현재 시간보다 1초 이전으로 설정
+                .signWith(key)
+                .compact();
+
+        Assertions.assertThatThrownBy(() -> jwtParser.validateToken(expiredToken))
+                        .isInstanceOf(AuthException.class)
+                        .hasMessageContaining("Expired token");
     }
 
     @Test

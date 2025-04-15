@@ -1,8 +1,6 @@
 package com.smashrating.match.enums;
 
-public enum MatchStatus {
+public enum MatchResultStatus {
     PENDING,
-    ACCEPTED,
-    REJECTED,
     COMPLETED;
 }

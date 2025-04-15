@@ -32,10 +32,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         for(Cookie cookie : cookies) {
             if (cookie.getName().equals("accessToken")) {
                 String token = cookie.getValue();
-                if (jwtParser.validateToken(token)) {
-                    Authentication authentication = jwtParser.getAuthentication(token);
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                }
+                jwtParser.validateToken(token);
+                Authentication authentication = jwtParser.getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
 

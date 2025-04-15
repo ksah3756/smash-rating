@@ -1,7 +1,10 @@
 package com.smashrating.auth.jwt;
 
 import com.smashrating.auth.enums.util.JwtUtils;
+import com.smashrating.auth.exception.AuthErrorCode;
+import com.smashrating.auth.exception.AuthException;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
@@ -18,26 +21,27 @@ import java.util.Set;
 public class JwtParser {
     private final JwtUtils jwtUtils;
 
-    private Claims getClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(jwtUtils.getSignInKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-    }
-
-    public boolean validateToken(String token) {
+    private Claims parseClaims(String token) {
         try {
-            getClaims(token);
-            return true;
-        } catch (JwtException e) {
-            // Log the exception or handle it as needed
-            return false;
+            return Jwts.parser()
+                    .verifyWith(jwtUtils.getSignInKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch(ExpiredJwtException e) {
+            throw new AuthException(AuthErrorCode.EXPIRED_TOKEN);
+        } catch (RuntimeException e) {
+            // Token이 유효하지 않은 경우, 예외를 던짐
+            throw new AuthException(AuthErrorCode.INVALID_TOKEN);
         }
     }
 
+    public void validateToken(String token) {
+        parseClaims(token);
+    }
+
     public Authentication getAuthentication(String token) {
-        Claims claims = getClaims(token);
+        Claims claims = parseClaims(token);
         String role = claims.get("role", String.class);
         Set<SimpleGrantedAuthority> authorities = getRoles(role);
 
@@ -58,7 +62,7 @@ public class JwtParser {
     }
 
     public String getUsername(String token) {
-        Claims claims = getClaims(token);
+        Claims claims = parseClaims(token);
         return claims.get("username", String.class);
     }
 }

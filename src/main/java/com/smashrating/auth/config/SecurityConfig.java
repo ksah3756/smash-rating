@@ -1,6 +1,7 @@
 package com.smashrating.auth.config;
 
 import com.smashrating.auth.application.LoginService;
+import com.smashrating.auth.filter.JwtExceptionHandlingFilter;
 import com.smashrating.auth.filter.LoginFilter;
 import com.smashrating.auth.handler.LoginSuccessHandler;
 import com.smashrating.auth.jwt.JwtParser;
@@ -62,6 +63,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+                .addFilterBefore(jwtExceptionHandlingFilter(), JwtAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(loginFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
@@ -70,6 +72,16 @@ public class SecurityConfig {
                         .requestMatchers(PERMIT_ALL_PATTERNS).permitAll()
                         .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setContentType("application/json");
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "{\"code\":\"UNAUTHORIZED\",\"message\":\"인증이 필요합니다.\"}");
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setContentType("application/json");
+                            response.sendError(HttpServletResponse.SC_FORBIDDEN, "{\"code\":\"FORBIDDEN\",\"message\":\"접근 권한이 없습니다.\"}");
+                        })
                 );
 
         return http.build();
@@ -118,6 +130,10 @@ public class SecurityConfig {
 
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
         return new JwtAuthenticationFilter(jwtParser);
+    }
+
+    public JwtExceptionHandlingFilter jwtExceptionHandlingFilter() {
+        return new JwtExceptionHandlingFilter();
     }
 
     @Bean
