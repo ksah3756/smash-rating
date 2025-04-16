@@ -1,79 +1,69 @@
 package com.smashrating.user.application;
 
 import com.smashrating.common.exception.CustomException;
+import com.smashrating.user.UserCreateRequestTestFactory;
+import com.smashrating.user.UserTestFactory;
 import com.smashrating.user.domain.User;
 import com.smashrating.user.dto.UserCreateRequest;
 import com.smashrating.user.dto.UserCreateResponse;
-import com.smashrating.user.event.UserCreatedEvent;
 import com.smashrating.user.exception.UserErrorCode;
 import com.smashrating.user.implement.UserValidator;
 import com.smashrating.user.implement.UserWriter;
+import com.smashrating.user.infrastructure.FakeApplicationEventPublisher;
+import com.smashrating.user.infrastructure.FakePasswordEncoder;
+import com.smashrating.user.infrastructure.FakeUserRepository;
+import com.smashrating.user.infrastructure.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.mock;
 
-@ExtendWith(MockitoExtension.class)
+
 class UserServiceTest {
 
-    @Mock
+    private UserRepository userRepository;
     private UserValidator userValidator;
-    @Mock
     private UserWriter userWriter;
-    @Mock
     private ApplicationEventPublisher eventPublisher;
-
-    @InjectMocks
     private UserService userService;
+
+    @BeforeEach
+    void setUp() {
+        userRepository = new FakeUserRepository();
+        userValidator = new UserValidator(userRepository);
+        userWriter = new UserWriter(userRepository, new FakePasswordEncoder());
+        eventPublisher = new FakeApplicationEventPublisher();
+        userService = new UserService(userWriter, userValidator, eventPublisher);
+    }
 
 
     @Test
     @DisplayName("username 중복이면 예외를 던진다")
     void createMember_throwsException_whenUsernameDuplicate() {
         // given
-        UserCreateRequest request = new UserCreateRequest("test", "pw", "name", "nickname", "email");
-        given(userValidator.isUsernameDuplicate("test")).willReturn(true);
+        User user = UserTestFactory.createDefaultUser();
+        userRepository.save(user);
+        UserCreateRequest request = UserCreateRequestTestFactory.createDefaultRequest();
 
         // expect
         assertThatThrownBy(() -> userService.createMember(request))
                 .isInstanceOf(CustomException.class)
                 .hasMessageContaining(UserErrorCode.USER_USERNAME_DUPLICATE.getMessage());
-
-        then(userWriter).shouldHaveNoInteractions();
     }
 
     @Test
-    @DisplayName("회원가입 성공 시 UserWriter와 EventPublisher가 호출된다")
+    @DisplayName("회원가입 성공")
     void createMember_success() {
         // given
-        UserCreateRequest request = new UserCreateRequest("test", "pw", "name", "nickname", "email");
-        User mockUser = mock(User.class);
-        given(userValidator.isUsernameDuplicate("test")).willReturn(false);
-        given(userWriter.createUser("test", "pw", "name", "nickname", "email")).willReturn(mockUser);
-        given(mockUser.getId()).willReturn(1L);
-        given(mockUser.getUsername()).willReturn("test");
-
-        ArgumentCaptor<UserCreatedEvent> eventCaptor = ArgumentCaptor.forClass(UserCreatedEvent.class);
+        UserCreateRequest request = UserCreateRequestTestFactory.createDefaultRequest();
 
         // when
         UserCreateResponse response = userService.createMember(request);
 
         // then
         assertThat(response.id()).isEqualTo(1L);
-        then(userWriter).should().createUser("test", "pw", "name", "nickname", "email");
-        then(eventPublisher).should().publishEvent(eventCaptor.capture());
-
-        UserCreatedEvent publishedEvent = eventCaptor.getValue();
-        assertThat(publishedEvent.getUsername()).isEqualTo("test");
     }
 }

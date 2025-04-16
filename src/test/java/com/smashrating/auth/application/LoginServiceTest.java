@@ -2,7 +2,7 @@ package com.smashrating.auth.application;
 
 import com.smashrating.user.UserTestFactory;
 import com.smashrating.user.domain.User;
-import com.smashrating.user.infrastructure.UserRepository;
+import com.smashrating.user.infrastructure.JpaUserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ class LoginServiceTest {
     private LoginService loginService;
 
     @Autowired
-    private UserRepository userRepository;
+    private JpaUserRepository userRepository;
 
     @Test
     @DisplayName("성공적으로 사용자를 로드한다.")

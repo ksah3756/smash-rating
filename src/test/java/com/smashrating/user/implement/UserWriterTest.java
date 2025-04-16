@@ -2,7 +2,11 @@ package com.smashrating.user.implement;
 
 import com.smashrating.user.domain.User;
 import com.smashrating.user.UserTestFactory;
+import com.smashrating.user.infrastructure.FakePasswordEncoder;
+import com.smashrating.user.infrastructure.FakeUserRepository;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,27 +20,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
-@DataJpaTest
-@ActiveProfiles("test")
-@EntityScan(basePackages = { // core 모듈의 domain package들을 scan
-        "com.smashrating.user.domain"
-})
-@EnableJpaRepositories(basePackages = { // core 모듈의 infrastructure package들을 scan
-       "com.smashrating.user.infrastructure"
-})
-@Import({UserWriter.class, UserWriterTest.TestConfig.class})
 class UserWriterTest {
 
-    @TestConfiguration
-    static class TestConfig {
-        @Bean
-        public PasswordEncoder passwordEncoder() {
-            return new BCryptPasswordEncoder();
-        }
-    }
-
-    @Autowired
     private UserWriter userWriter;
+
+    @BeforeEach
+    void setUp() {
+        userWriter = new UserWriter(new FakeUserRepository(), new FakePasswordEncoder());
+    }
 
     @Test
     @DisplayName("비밀번호를 암호화하여 유저를 생성한다.")

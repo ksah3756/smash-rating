@@ -2,8 +2,11 @@ package com.smashrating.user.implement;
 
 import com.smashrating.user.domain.Role;
 import com.smashrating.user.domain.User;
-import com.smashrating.user.infrastructure.UserRepository;
+import com.smashrating.user.infrastructure.FakeUserRepository;
+import com.smashrating.user.infrastructure.JpaUserRepository;
 import com.smashrating.user.UserTestFactory;
+import com.smashrating.user.infrastructure.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,22 +18,16 @@ import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest
-@ActiveProfiles("test")
-@EntityScan(basePackages = { // core 모듈의 domain package들을 scan
-        "com.smashrating.user.domain"
-})
-@EnableJpaRepositories(basePackages = { // core 모듈의 infrastructure package들을 scan
-        "com.smashrating.user.infrastructure"
-})
-@Import({UserValidator.class})
 class UserValidatorTest {
 
-    @Autowired
+    private UserRepository userRepository;
     private UserValidator userValidator;
 
-    @Autowired
-    private UserRepository userRepository;
+   @BeforeEach
+    void setUp() {
+       userRepository = new FakeUserRepository();
+       userValidator = new UserValidator(userRepository);
+   }
 
     @Test
     @DisplayName("유저 이름이 중복될 경우 true를 반환한다.")

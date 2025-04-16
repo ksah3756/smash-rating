@@ -6,8 +6,6 @@ import com.smashrating.match.dto.MatchResultResponse;
 import com.smashrating.match.dto.PendingMatchResponse;
 import com.smashrating.match.implement.MatchResultReader;
 import com.smashrating.match.implement.PendingMatchReader;
-import com.smashrating.user.domain.User;
-import com.smashrating.user.implement.UserReader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

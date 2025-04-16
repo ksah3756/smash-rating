@@ -2,6 +2,7 @@ package com.smashrating.user.implement;
 
 import com.smashrating.user.domain.User;
 import com.smashrating.user.domain.Role;
+import com.smashrating.user.infrastructure.JpaUserRepository;
 import com.smashrating.user.infrastructure.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

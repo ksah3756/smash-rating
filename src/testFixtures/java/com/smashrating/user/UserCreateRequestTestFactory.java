@@ -5,11 +5,11 @@ import com.smashrating.user.dto.UserCreateRequest;
 public class UserCreateRequestTestFactory {
     public static UserCreateRequest createDefaultRequest() {
         return UserCreateRequest.builder()
-                .username("testuser")
-                .password("testpass")
+                .username("testUser")
+                .password("testPassword")
                 .realName("testName")
                 .nickname("testNickname")
-                .email("testEmail@gmail.com")
+                .email("testEmail@test.com")
                 .build();
     }
 }
