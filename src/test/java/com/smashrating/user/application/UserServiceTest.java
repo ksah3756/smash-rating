@@ -8,7 +8,6 @@ import com.smashrating.user.event.UserCreatedEvent;
 import com.smashrating.user.exception.UserErrorCode;
 import com.smashrating.user.implement.UserValidator;
 import com.smashrating.user.implement.UserWriter;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +19,6 @@ import org.springframework.context.ApplicationEventPublisher;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -43,13 +41,13 @@ class UserServiceTest {
     @DisplayName("username 중복이면 예외를 던진다")
     void createMember_throwsException_whenUsernameDuplicate() {
         // given
-        UserCreateRequest request = new UserCreateRequest("test", "pw", "name", "email");
+        UserCreateRequest request = new UserCreateRequest("test", "pw", "name", "nickname", "email");
         given(userValidator.isUsernameDuplicate("test")).willReturn(true);
 
         // expect
         assertThatThrownBy(() -> userService.createMember(request))
                 .isInstanceOf(CustomException.class)
-                .hasMessageContaining(UserErrorCode.USER_DUPLICATE.getMessage());
+                .hasMessageContaining(UserErrorCode.USER_USERNAME_DUPLICATE.getMessage());
 
         then(userWriter).shouldHaveNoInteractions();
     }
@@ -58,10 +56,10 @@ class UserServiceTest {
     @DisplayName("회원가입 성공 시 UserWriter와 EventPublisher가 호출된다")
     void createMember_success() {
         // given
-        UserCreateRequest request = new UserCreateRequest("test", "pw", "name", "email");
+        UserCreateRequest request = new UserCreateRequest("test", "pw", "name", "nickname", "email");
         User mockUser = mock(User.class);
         given(userValidator.isUsernameDuplicate("test")).willReturn(false);
-        given(userWriter.createUser("test", "pw", "name", "email")).willReturn(mockUser);
+        given(userWriter.createUser("test", "pw", "name", "nickname", "email")).willReturn(mockUser);
         given(mockUser.getId()).willReturn(1L);
         given(mockUser.getUsername()).willReturn("test");
 
@@ -72,7 +70,7 @@ class UserServiceTest {
 
         // then
         assertThat(response.id()).isEqualTo(1L);
-        then(userWriter).should().createUser("test", "pw", "name", "email");
+        then(userWriter).should().createUser("test", "pw", "name", "nickname", "email");
         then(eventPublisher).should().publishEvent(eventCaptor.capture());
 
         UserCreatedEvent publishedEvent = eventCaptor.getValue();

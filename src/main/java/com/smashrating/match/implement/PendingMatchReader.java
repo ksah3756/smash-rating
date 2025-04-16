@@ -1,6 +1,7 @@
 package com.smashrating.match.implement;
 
 import com.smashrating.match.domain.PendingMatch;
+import com.smashrating.match.dto.MatchResultResponse;
 import com.smashrating.match.dto.PendingMatchResponse;
 import com.smashrating.match.infrastructure.PendingMatchRepository;
 import lombok.RequiredArgsConstructor;

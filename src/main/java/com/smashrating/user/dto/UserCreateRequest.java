@@ -18,9 +18,13 @@ public record UserCreateRequest(
         @NotBlank @Size(min = 4, max = 20, message = "비밀번호는 4자 이상, 20자 이내여야 합니다.")
         String password,
 
-        @NotBlank @Size(min = 1, max = 50, message = "이름은 50자 이내여야 합니다.")
-        @Schema(description = "이름", example = "kimsangho", requiredMode = REQUIRED)
-        String name,
+        @NotBlank @Size(min = 1, max = 30, message = "실명은 30자 이내여야 합니다.")
+        @Schema(description = "이름", example = "김상호", requiredMode = REQUIRED)
+        String realName,
+
+        @NotBlank @Size(min = 1, max = 30, message = "별명은 30자 이내여야 합니다.")
+        @Schema(description = "이름", example = "지존", requiredMode = REQUIRED)
+        String nickname,
 
         @NotBlank
         String email

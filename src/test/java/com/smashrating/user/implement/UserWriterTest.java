@@ -45,7 +45,7 @@ class UserWriterTest {
         User user = UserTestFactory.createDefaultUser();
 
         // when
-        User savedUser = userWriter.createUser(user.getUsername(), user.getPassword(), user.getName(), user.getEmail());
+        User savedUser = userWriter.createUser(user.getUsername(), user.getPassword(), user.getRealName(), user.getNickname() ,user.getEmail());
 
         // then
         Assertions.assertThat(savedUser.getUsername()).isEqualTo(user.getUsername());

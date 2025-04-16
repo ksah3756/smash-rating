@@ -18,22 +18,22 @@ public class MatchResult extends BaseEntity {
 
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "userId", column = @Column(name = "user_id1")),
-            @AttributeOverride(name = "score", column = @Column(name = "user1_score"))
+            @AttributeOverride(name = "userId", column = @Column(name = "user_id")),
+            @AttributeOverride(name = "gameScore", column = @Column(name = "user_score"))
     })
-    private MatchUserInfo user1;
+    private MatchUserInfo userInfo;
 
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "userId", column = @Column(name = "user_id2")),
-            @AttributeOverride(name = "score", column = @Column(name = "user2_score"))
+            @AttributeOverride(name = "userId", column = @Column(name = "opponent_id")),
+            @AttributeOverride(name = "gameScore", column = @Column(name = "opponent_score"))
     })
-    private MatchUserInfo user2;
+    private MatchUserInfo opponentInfo;
 
     @Enumerated(EnumType.STRING)
     @NotNull
     private MatchResultStatus status;
 
     @NotNull
-    private Double updatedScore;
+    private Double updatedRatingScore;
 }

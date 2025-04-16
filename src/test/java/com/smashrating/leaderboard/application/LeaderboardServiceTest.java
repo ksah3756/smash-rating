@@ -1,14 +1,12 @@
 package com.smashrating.leaderboard.application;
 
 import com.smashrating.auth.dto.UserDto;
-import com.smashrating.auth.dto.UserPrinciple;
+import com.smashrating.auth.dto.UserPrincipal;
 import com.smashrating.leaderboard.dto.RankEntry;
 import com.smashrating.leaderboard.dto.RankResponse;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -31,8 +29,8 @@ class LeaderboardServiceTest {
     @Test
     @DisplayName("getMyRank - 유저 점수 및 랭킹 조회")
     void getMyRank() {
-        UserDto userDto = UserDto.of("ROLE_USER", "testName", "testId", "testEmail");
-        UserPrinciple user = UserPrinciple.create(userDto);
+        UserDto userDto = UserDto.of("ROLE_USER", 1L, "testName", "testId");
+        UserPrincipal user = UserPrincipal.create(userDto);
 
         given(leaderboardRepository.getScore("testId")).willReturn(1000.0);
         given(leaderboardRepository.getRank("testId")).willReturn(5L);

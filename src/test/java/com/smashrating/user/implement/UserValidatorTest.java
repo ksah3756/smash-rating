@@ -45,6 +45,7 @@ class UserValidatorTest {
                 "testUser",
                 "testPassword",
                 "testName",
+                "testNickname",
                 "testEmail@gmail.com",
                 Role.ROLE_USER
         );
@@ -68,11 +69,56 @@ class UserValidatorTest {
                 "testUser2",
                 "testPassword",
                 "testName",
+                "testNickname",
                 "testEmail@gmail.com",
                 Role.ROLE_USER
         );
 
         boolean isDuplicate = userValidator.isUsernameDuplicate(user2.getUsername());
+
+        // then
+        assertFalse(isDuplicate);
+    }
+
+    @Test
+    @DisplayName("이메일이 중복될 경우 true를 반환한다.")
+    void isEmailDuplicate_duplicate() {
+        // given
+        User user = UserTestFactory.createDefaultUser();
+        userRepository.save(user);
+
+        // when
+        User user2 = User.create(
+                "testUser2",
+                "testPassword",
+                "testName",
+                "testNickname",
+                user.getEmail(),
+                Role.ROLE_USER
+        );
+        boolean isDuplicate = userValidator.isEmailDuplicate(user2.getEmail());
+
+        // then
+        assertTrue(isDuplicate);
+    }
+
+    @Test
+    @DisplayName("이메일이 중복되지 않을 경우 false를 반환한다.")
+    void isEmailDuplicate_notDuplicate() {
+        // given
+        User user = UserTestFactory.createDefaultUser();
+        userRepository.save(user);
+
+        // when
+        User user2 = User.create(
+                "testUser2",
+                "testPassword",
+                "testName",
+                "testNickname",
+                "testEmail2@gmail.com",
+                Role.ROLE_USER
+        );
+        boolean isDuplicate = userValidator.isEmailDuplicate(user2.getEmail());
 
         // then
         assertFalse(isDuplicate);

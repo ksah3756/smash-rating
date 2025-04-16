@@ -1,5 +1,6 @@
 package com.smashrating.auth.jwt;
 
+import com.smashrating.auth.dto.UserPrincipal;
 import com.smashrating.auth.enums.util.JwtUtils;
 import com.smashrating.auth.exception.AuthErrorCode;
 import com.smashrating.auth.exception.AuthException;
@@ -59,10 +60,5 @@ public class JwtParser {
             return Collections.singleton(new SimpleGrantedAuthority("ROLE_ADMIN"));
         }
         return Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
-    }
-
-    public String getUsername(String token) {
-        Claims claims = parseClaims(token);
-        return claims.get("username", String.class);
     }
 }

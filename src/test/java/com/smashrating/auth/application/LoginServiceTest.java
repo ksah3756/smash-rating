@@ -1,15 +1,10 @@
 package com.smashrating.auth.application;
 
-import com.smashrating.auth.dto.UserPrinciple;
 import com.smashrating.user.UserTestFactory;
-import com.smashrating.user.domain.Role;
 import com.smashrating.user.domain.User;
 import com.smashrating.user.infrastructure.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
@@ -41,14 +36,14 @@ class LoginServiceTest {
 
         // when
         String username = user.getUsername();
-        UserPrinciple userPrinciple = (UserPrinciple) loginService.loadUserByUsername(username);
+        com.smashrating.auth.dto.UserPrincipal userPrincipal = (com.smashrating.auth.dto.UserPrincipal) loginService.loadUserByUsername(username);
 
         // then
-        assertNotNull(userPrinciple);
-        assertEquals(user.getUsername(), userPrinciple.getUsername());
-        assertEquals(user.getPassword(), userPrinciple.getPassword());
-        assertEquals(user.getName(), userPrinciple.getName());
-        assertEquals(user.getRole().toString(), userPrinciple.getRole());
+        assertNotNull(userPrincipal);
+        assertEquals(user.getUsername(), userPrincipal.getUsername());
+        assertEquals(user.getPassword(), userPrincipal.getPassword());
+        assertEquals(user.getRealName(), userPrincipal.getName());
+        assertEquals(user.getRole().toString(), userPrincipal.getRole());
     }
 
     @Test

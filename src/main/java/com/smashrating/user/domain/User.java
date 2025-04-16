@@ -27,8 +27,12 @@ public class User extends BaseEntity {
     private String password;
 
     @NotNull
-    @Column(length = 50)
-    private String name;
+    @Column(length = 30)
+    private String realName;
+
+    @NotNull
+    @Column(length = 30)
+    private String nickname;
 
     @NotNull
     private String email;
@@ -40,14 +44,16 @@ public class User extends BaseEntity {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Rating rating;
 
-    public static User create(String username, String password, String name, String email, Role role) {
+    public static User create(String username, String password, String realName, String nickname, String email, Role role) {
         User user = User.builder()
                 .username(username)
                 .password(password)
-                .name(name)
+                .realName(realName)
+                .nickname(nickname)
                 .email(email)
                 .role(role)
                 .build();
+
         user.initRating();
         return user;
     }
@@ -57,9 +63,20 @@ public class User extends BaseEntity {
     }
 
     public void update(User user) {
-        this.username = user.getUsername();
         this.password = user.getPassword();
-        this.name = user.getName();
+        this.nickname = user.getNickname();
         this.email = user.getEmail();
+    }
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
+    }
+
+    public void updateEmail(String email) {
+        this.email = email;
     }
 }

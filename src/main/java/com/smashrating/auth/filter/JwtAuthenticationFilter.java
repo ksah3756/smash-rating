@@ -1,5 +1,6 @@
 package com.smashrating.auth.filter;
 
+import com.smashrating.auth.dto.UserPrincipal;
 import com.smashrating.auth.jwt.JwtParser;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

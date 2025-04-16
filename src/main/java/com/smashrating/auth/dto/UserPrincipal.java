@@ -9,26 +9,26 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-public class UserPrinciple implements OAuth2User, UserDetails {
+public class UserPrincipal implements OAuth2User, UserDetails {
 
     private UserDto userDto;
     private Map<String, Object> attributes;
 
-    private UserPrinciple(UserDto userDto) {
+    private UserPrincipal(UserDto userDto) {
         this.userDto = userDto;
     }
 
-    private UserPrinciple(UserDto userDto, Map<String, Object> attributes) {
+    private UserPrincipal(UserDto userDto, Map<String, Object> attributes) {
         this.userDto = userDto;
         this.attributes = attributes;
     }
 
-    public static UserPrinciple create(UserDto userDto) {
-        return new UserPrinciple(userDto);
+    public static UserPrincipal create(UserDto userDto) {
+        return new UserPrincipal(userDto);
     }
 
-    public static UserPrinciple create(UserDto userDto, Map<String, Object> attributes) {
-        return new UserPrinciple(userDto, attributes);
+    public static UserPrincipal create(UserDto userDto, Map<String, Object> attributes) {
+        return new UserPrincipal(userDto, attributes);
     }
 
     @Override
@@ -49,13 +49,12 @@ public class UserPrinciple implements OAuth2User, UserDetails {
         return userDto.password();
     }
 
-    @Override
-    public String getName() {
-        return userDto.name();
-    }
-
     public String getUsername() {
         return userDto.username();
+    }
+
+    public Long getId() {
+        return userDto.id();
     }
 
     public String getRole() {
@@ -80,5 +79,10 @@ public class UserPrinciple implements OAuth2User, UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public String getName() {
+        return userDto.username();
     }
 }

@@ -13,8 +13,8 @@ public class UserWriter {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public User createUser(String username, String password, String name, String email) {
+    public User createUser(String username, String password, String realName, String nickname, String email) {
         String encodedPassword = passwordEncoder.encode(password);
-        return userRepository.save(User.create(username, encodedPassword, name, email, Role.ROLE_USER));
+        return userRepository.save(User.create(username, encodedPassword, realName, nickname, email, Role.ROLE_USER));
     }
 }

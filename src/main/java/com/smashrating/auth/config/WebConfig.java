@@ -1,6 +1,6 @@
 package com.smashrating.auth.config;
 
-import com.smashrating.auth.resolver.AuthUserArgumentResolver;
+import com.smashrating.auth.resolver.AuthUserPrincipalArgumentResolver;
 import com.smashrating.user.implement.UserReader;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -20,7 +20,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new AuthUserArgumentResolver(userReader));
+        resolvers.add(new AuthUserPrincipalArgumentResolver(userReader));
     }
 
     @Override

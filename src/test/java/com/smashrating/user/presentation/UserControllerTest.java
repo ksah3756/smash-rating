@@ -3,6 +3,7 @@ package com.smashrating.user.presentation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smashrating.auth.TestSecurityConfig;
 import com.smashrating.auth.config.SecurityConfig;
+import com.smashrating.user.UserCreateRequestTestFactory;
 import com.smashrating.user.application.UserService;
 import com.smashrating.user.dto.UserCreateRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -40,12 +41,7 @@ class UserControllerTest {
     @Test
     @DisplayName("요청 바디를 제대로 기입할 경우 회원가입을 성공한다.")
     void register_success() throws Exception {
-        UserCreateRequest request = UserCreateRequest.builder()
-                .username("testuser")
-                .password("testpass")
-                .name("testName")
-                .email("testEmail@gmail.com")
-                .build();
+        UserCreateRequest request = UserCreateRequestTestFactory.createDefaultRequest();
 
         String req = new ObjectMapper().writeValueAsString(request);
         mockMvc.perform(post("/user/register")
@@ -58,12 +54,7 @@ class UserControllerTest {
     @Test
     @DisplayName("요청 바디를 제대로 기입하지 않을 경우 회원가입에 실패한다.")
     void register_notValidRequestBody() throws Exception {
-        UserCreateRequest request = UserCreateRequest.builder()
-                .username("")
-                .password("testpass")
-                .name("testName")
-                .email("testEmail@gmail.com")
-                .build();
+        UserCreateRequest request = UserCreateRequestTestFactory.createDefaultRequest();
 
         String req = new ObjectMapper().writeValueAsString(request);
         mockMvc.perform(post("/user/register")

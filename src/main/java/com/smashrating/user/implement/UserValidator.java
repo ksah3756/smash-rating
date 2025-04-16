@@ -18,7 +18,7 @@ public class UserValidator {
         return userRepository.existsByEmail(email);
     }
 
-    public boolean isNameDuplicate(String name) {
-        return userRepository.existsByName(name);
+    public boolean isNicknameDuplicate(String nickname) {
+        return userRepository.existsByNickname(nickname);
     }
 }

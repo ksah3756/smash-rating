@@ -27,7 +27,8 @@ public class UserService {
         User savedUser = userWriter.createUser(
                 request.username(),
                 request.password(),
-                request.name(),
+                request.realName(),
+                request.nickname(),
                 request.email()
         );
 
@@ -42,7 +43,7 @@ public class UserService {
         if(userValidator.isEmailDuplicate(request.email())) {
             throw new CustomException(UserErrorCode.USER_EMAIL_DUPLICATE);
         }
-        if(userValidator.isNameDuplicate(request.name())) {
+        if(userValidator.isNicknameDuplicate(request.nickname())) {
             throw new CustomException(UserErrorCode.USER_NAME_DUPLICATE);
         }
     }

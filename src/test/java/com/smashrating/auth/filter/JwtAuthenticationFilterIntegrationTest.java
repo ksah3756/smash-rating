@@ -1,7 +1,7 @@
 package com.smashrating.auth.filter;
 
 import com.smashrating.auth.dto.UserDto;
-import com.smashrating.auth.dto.UserPrinciple;
+import com.smashrating.auth.dto.UserPrincipal;
 import com.smashrating.auth.jwt.JwtProvider;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
@@ -53,8 +53,8 @@ class JwtAuthenticationFilterIntegrationTest {
     @Test
     void validToken_setsAuthenticationInSecurityContext() throws Exception {
         // given;
-        UserDto userDto = UserDto.of("ROLE_USER", "testName", "testId", "testEmail");
-        Authentication auth = new UsernamePasswordAuthenticationToken(UserPrinciple.create(userDto), null, List.of());
+        UserDto userDto = UserDto.of("ROLE_USER", 1L, "testName", "testId");
+        Authentication auth = new UsernamePasswordAuthenticationToken(UserPrincipal.create(userDto), null, List.of());
         String accessToken = jwtProvider.generateAccessToken(auth);
 
         mockMvc.perform(get("/test")

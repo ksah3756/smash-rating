@@ -8,5 +8,5 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Parameter(hidden = true)
 @Documented
-public @interface AuthUser {
+public @interface AuthUserPrincipal {
 }

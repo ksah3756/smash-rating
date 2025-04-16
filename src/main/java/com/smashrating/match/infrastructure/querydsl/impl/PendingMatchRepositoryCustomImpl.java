@@ -9,9 +9,13 @@ import com.smashrating.match.infrastructure.querydsl.PendingMatchRepositoryCusto
 import com.smashrating.rating.domain.QRating;
 import com.smashrating.user.domain.QUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import static com.querydsl.core.types.Projections.*;
+
+@Repository
 @RequiredArgsConstructor
 public class PendingMatchRepositoryCustomImpl implements PendingMatchRepositoryCustom {
 
@@ -21,19 +25,19 @@ public class PendingMatchRepositoryCustomImpl implements PendingMatchRepositoryC
     public List<PendingMatchResponse> getReceivedPendingMatch(Long receiveUserId) {
         QPendingMatch pendingMatch = QPendingMatch.pendingMatch;
         QUser opponent = QUser.user;
-        QRating rating = QRating.rating;
+        QRating opponentRating = QRating.rating;
 
         // TODO: PendingMatchStatus에 인덱스 걸기?
-        return jpaQueryFactory.select(Projections.constructor(
+        return jpaQueryFactory.select(constructor(
                     PendingMatchResponse.class,
-                    opponent.id,
-                    opponent.name,
-                    rating.score,
-                    rating.tier.stringValue()
+                    opponent.username,
+                    opponent.nickname,
+                    opponentRating.score,
+                    opponentRating.tier.stringValue()
             ))
             .from(pendingMatch)
             .join(opponent).on(pendingMatch.sendUserId.eq(opponent.id))
-            .join(rating).on(opponent.id.eq(rating.id))
+            .join(opponentRating).on(opponent.id.eq(opponentRating.id))
             .where(pendingMatch.receiveUserId.eq(receiveUserId)
                     .and(pendingMatch.status.eq(PendingMatchStatus.PENDING))
             )
@@ -47,10 +51,10 @@ public class PendingMatchRepositoryCustomImpl implements PendingMatchRepositoryC
         QRating rating = QRating.rating;
 
         // TODO: PendingMatchStatus에 인덱스 걸기?
-        return jpaQueryFactory.select(Projections.constructor(
+        return jpaQueryFactory.select(constructor(
                         PendingMatchResponse.class,
-                        opponent.id,
-                        opponent.name,
+                        opponent.username,
+                        opponent.nickname,
                         rating.score,
                         rating.tier.stringValue()
                 ))

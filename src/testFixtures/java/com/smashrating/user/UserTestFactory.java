@@ -9,6 +9,7 @@ public class UserTestFactory {
                 "testUser",
                 "testPassword",
                 "testName",
+                "testNickname",
                 "testEmail@test.com",
                 Role.ROLE_USER
         );
