@@ -37,20 +37,23 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @NotNull
-    private Double score;
-
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Rating rating;
 
     public static User create(String username, String password, String name, String email, Role role) {
-        return User.builder()
+        User user = User.builder()
                 .username(username)
                 .password(password)
                 .name(name)
                 .email(email)
                 .role(role)
                 .build();
+        user.initRating();
+        return user;
+    }
+
+    public void initRating() {
+        this.rating = Rating.create(this);
     }
 
     public void update(User user) {
@@ -58,6 +61,5 @@ public class User extends BaseEntity {
         this.password = user.getPassword();
         this.name = user.getName();
         this.email = user.getEmail();
-        this.role = user.getRole();
     }
 }

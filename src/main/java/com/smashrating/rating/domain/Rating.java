@@ -21,9 +21,25 @@ public class Rating extends BaseEntity {
     private User user;
 
     @NotNull
-    private Double score;
+    @Builder.Default
+    private Double score = 1000.0;
 
     @NotNull
-    private Tier tier;
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private Tier tier = Tier.UNRANKED;
 
+    @NotNull
+    @Builder.Default
+    private int totalMatchCount = 0;
+
+    @NotNull
+    @Builder.Default
+    private int winMatchCount = 0;
+
+    public static Rating create(User user) {
+        return Rating.builder()
+                .user(user)
+                .build();
+    }
 }

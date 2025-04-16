@@ -13,23 +13,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MatchService {
     private final PendingMatchReader pendingMatchReader;
-    private final UserReader userReader;
 
     public List<PendingMatchResponse> getReceivedMatches(User user) {
-        // 상대가 sendUser
-        pendingMatchReader.getReceivedPendingMatch(user.getId())
-                .stream().map(
-                        PendingMatch -> {
-                            User opponent = userReader.getUserById(PendingMatch.getSendUserId());
-
-                            PendingMatchResponse.of(
-                                    opponent.getId(),
-                                    opponent.getUsername(),
-                                    opponent.
-                            )
-                        }
-                )
-                .toList;
+        return pendingMatchReader.getReceivedPendingMatch(user.getId());
     }
 
     public List<PendingMatchResponse> getSentMatches(User user) {

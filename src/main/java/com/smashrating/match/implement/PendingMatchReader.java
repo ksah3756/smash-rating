@@ -1,6 +1,7 @@
 package com.smashrating.match.implement;
 
 import com.smashrating.match.domain.PendingMatch;
+import com.smashrating.match.dto.PendingMatchResponse;
 import com.smashrating.match.infrastructure.PendingMatchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -12,11 +13,11 @@ import java.util.List;
 public class PendingMatchReader {
     private final PendingMatchRepository pendingMatchRepository;
 
-    public List<PendingMatch> getReceivedPendingMatch(Long receiveUserId) {
-        return pendingMatchRepository.findByReceiveUserId(receiveUserId);
+    public List<PendingMatchResponse> getReceivedPendingMatch(Long receiveUserId) {
+        return pendingMatchRepository.getReceivedPendingMatch(receiveUserId);
     }
 
-    public List<PendingMatch> getSentPendingMatch(Long sendUserId) {
-        return pendingMatchRepository.findBySendUserId(sendUserId);
+    public List<PendingMatchResponse> getSentPendingMatch(Long sendUserId) {
+        return pendingMatchRepository.getSentPendingMatch(sendUserId);
     }
 }

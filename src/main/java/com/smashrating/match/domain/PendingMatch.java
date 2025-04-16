@@ -12,7 +12,7 @@ import lombok.*;
 @Getter
 @Entity
 @Table(indexes = {
-        @Index(name = "idx_request_user_id", columnList = "request_user_id"),
+        @Index(name = "idx_request_user_id", columnList = "send_user_id"),
         @Index(name = "idx_receive_user_id", columnList = "receive_user_id")
 })
 public class PendingMatch extends BaseEntity {
