@@ -22,9 +22,7 @@ public class UserService {
 
     @Transactional
     public UserCreateResponse createMember(UserCreateRequest request) {
-        if(userValidator.isUsernameDuplicate(request.username())) {
-            throw new CustomException(UserErrorCode.USER_DUPLICATE);
-        }
+        checkUserInfoUniqueness(request);
 
         User savedUser = userWriter.createUser(
                 request.username(),
@@ -35,5 +33,17 @@ public class UserService {
 
         eventPublisher.publishEvent(UserCreatedEvent.of(savedUser.getUsername()));
         return UserCreateResponse.of(savedUser.getId());
+    }
+
+    private void checkUserInfoUniqueness(UserCreateRequest request) {
+        if(userValidator.isUsernameDuplicate(request.username())) {
+            throw new CustomException(UserErrorCode.USER_USERNAME_DUPLICATE);
+        }
+        if(userValidator.isEmailDuplicate(request.email())) {
+            throw new CustomException(UserErrorCode.USER_EMAIL_DUPLICATE);
+        }
+        if(userValidator.isNameDuplicate(request.name())) {
+            throw new CustomException(UserErrorCode.USER_NAME_DUPLICATE);
+        }
     }
 }
