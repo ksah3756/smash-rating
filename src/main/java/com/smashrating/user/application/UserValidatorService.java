@@ -1,4 +1,4 @@
-package com.smashrating.user.implement;
+package com.smashrating.user.application;
 
 import com.smashrating.user.infrastructure.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UserValidator {
+public class UserValidatorService {
 
     private final UserRepository userRepository;
 
@@ -21,4 +21,6 @@ public class UserValidator {
     public boolean isNicknameDuplicate(String nickname) {
         return userRepository.existsByNickname(nickname);
     }
+
+
 }

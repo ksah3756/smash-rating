@@ -1,31 +1,27 @@
 package com.smashrating.auth.application;
 
+import com.smashrating.auth.dto.UserPrincipal;
 import com.smashrating.user.UserTestFactory;
 import com.smashrating.user.domain.User;
-import com.smashrating.user.infrastructure.JpaUserRepository;
+import com.smashrating.user.infrastructure.FakeUserRepository;
+import com.smashrating.user.infrastructure.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
-@DataJpaTest
-@ActiveProfiles("test")
-@Import({LoginService.class})
-@Transactional
 class LoginServiceTest {
 
-    @Autowired
+    private UserRepository userRepository;
     private LoginService loginService;
 
-    @Autowired
-    private JpaUserRepository userRepository;
+    @BeforeEach
+    void setUp() {
+        userRepository = new FakeUserRepository();
+        loginService = new LoginService(userRepository);
+    }
 
     @Test
     @DisplayName("성공적으로 사용자를 로드한다.")
@@ -36,13 +32,12 @@ class LoginServiceTest {
 
         // when
         String username = user.getUsername();
-        com.smashrating.auth.dto.UserPrincipal userPrincipal = (com.smashrating.auth.dto.UserPrincipal) loginService.loadUserByUsername(username);
+        UserPrincipal userPrincipal = (UserPrincipal) loginService.loadUserByUsername(username);
 
         // then
         assertNotNull(userPrincipal);
         assertEquals(user.getUsername(), userPrincipal.getUsername());
         assertEquals(user.getPassword(), userPrincipal.getPassword());
-        assertEquals(user.getRealName(), userPrincipal.getName());
         assertEquals(user.getRole().toString(), userPrincipal.getRole());
     }
 

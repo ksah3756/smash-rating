@@ -1,11 +1,17 @@
 package com.smashrating.match.infrastructure;
 
 import com.smashrating.match.domain.PendingMatch;
-import com.smashrating.match.dto.MatchResultResponse;
-import com.smashrating.match.infrastructure.querydsl.PendingMatchRepositoryCustom;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.smashrating.match.dto.PendingMatchResponse;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface PendingMatchRepository extends JpaRepository<PendingMatch, Long>, PendingMatchRepositoryCustom {
+public interface PendingMatchRepository {
+    PendingMatch save(PendingMatch pendingMatch);
+
+    Optional<PendingMatch> findById(Long id);
+
+    List<PendingMatchResponse> getReceivedPendingMatch(Long receiveUserId);
+
+    List<PendingMatchResponse> getSentPendingMatch(Long sendUserId);
 }

@@ -1,8 +1,7 @@
-package com.smashrating.user.implement;
+package com.smashrating.user.application.command;
 
 import com.smashrating.user.domain.User;
 import com.smashrating.user.domain.Role;
-import com.smashrating.user.infrastructure.JpaUserRepository;
 import com.smashrating.user.infrastructure.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -10,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UserWriter {
+public class UserCommandService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 

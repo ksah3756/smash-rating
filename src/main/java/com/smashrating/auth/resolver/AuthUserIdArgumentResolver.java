@@ -1,9 +1,10 @@
 package com.smashrating.auth.resolver;
 
+import com.smashrating.auth.dto.UserPrincipal;
+import com.smashrating.common.exception.CommonErrorCode;
+import com.smashrating.common.exception.CustomException;
 import com.smashrating.user.domain.User;
-import com.smashrating.user.exception.UserErrorCode;
-import com.smashrating.user.exception.UserException;
-import com.smashrating.user.implement.UserReader;
+import com.smashrating.user.application.query.UserQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
@@ -14,26 +15,27 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 @RequiredArgsConstructor
-public class AuthUserPrincipalArgumentResolver implements HandlerMethodArgumentResolver {
-    private final UserReader userReader;
+public class AuthUserIdArgumentResolver implements HandlerMethodArgumentResolver {
+    private final UserQueryService userReader;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         // @CurrentManager 애노테이션이 붙어 있고, 파라미터 타입이 Manager여야 함.
-        return parameter.getParameterAnnotation(AuthUserPrincipal.class) != null
+        return parameter.getParameterAnnotation(AuthUserId.class) != null
                 && User.class.isAssignableFrom(parameter.getParameterType());
     }
 
     @Override
-    public com.smashrating.auth.dto.UserPrincipal resolveArgument(MethodParameter parameter,
+    public Long resolveArgument(MethodParameter parameter,
                                                                   ModelAndViewContainer mavContainer,
                                                                   NativeWebRequest webRequest,
                                                                   WebDataBinderFactory binderFactory) throws Exception
     {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication == null) {
-            throw new UserException(UserErrorCode.USER_NOT_FOUND);
+            throw new CustomException(CommonErrorCode.UNAUTHORIZED);
         }
-        return (com.smashrating.auth.dto.UserPrincipal) authentication.getPrincipal();
+        UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+        return principal.getId();
     }
 }

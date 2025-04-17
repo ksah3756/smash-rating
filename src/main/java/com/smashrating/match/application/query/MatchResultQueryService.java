@@ -1,4 +1,4 @@
-package com.smashrating.match.implement;
+package com.smashrating.match.application.query;
 
 import com.smashrating.match.dto.MatchResultResponse;
 import com.smashrating.match.infrastructure.MatchResultRepository;
@@ -9,7 +9,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class MatchResultReader {
+public class MatchResultQueryService {
 
     private final MatchResultRepository matchResultRepository;
 

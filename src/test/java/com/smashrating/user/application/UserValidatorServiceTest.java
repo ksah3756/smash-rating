@@ -1,32 +1,25 @@
-package com.smashrating.user.implement;
+package com.smashrating.user.application;
 
 import com.smashrating.user.domain.Role;
 import com.smashrating.user.domain.User;
 import com.smashrating.user.infrastructure.FakeUserRepository;
-import com.smashrating.user.infrastructure.JpaUserRepository;
 import com.smashrating.user.UserTestFactory;
 import com.smashrating.user.infrastructure.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class UserValidatorTest {
+class UserValidatorServiceTest {
 
     private UserRepository userRepository;
-    private UserValidator userValidator;
+    private UserValidatorService userValidator;
 
    @BeforeEach
     void setUp() {
        userRepository = new FakeUserRepository();
-       userValidator = new UserValidator(userRepository);
+       userValidator = new UserValidatorService(userRepository);
    }
 
     @Test

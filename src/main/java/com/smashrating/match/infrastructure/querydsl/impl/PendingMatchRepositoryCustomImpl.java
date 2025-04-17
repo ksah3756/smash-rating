@@ -30,6 +30,7 @@ public class PendingMatchRepositoryCustomImpl implements PendingMatchRepositoryC
         // TODO: PendingMatchStatus에 인덱스 걸기?
         return jpaQueryFactory.select(constructor(
                     PendingMatchResponse.class,
+                    pendingMatch.id,
                     opponent.username,
                     opponent.nickname,
                     opponentRating.score,
@@ -53,6 +54,7 @@ public class PendingMatchRepositoryCustomImpl implements PendingMatchRepositoryC
         // TODO: PendingMatchStatus에 인덱스 걸기?
         return jpaQueryFactory.select(constructor(
                         PendingMatchResponse.class,
+                        pendingMatch.id,
                         opponent.username,
                         opponent.nickname,
                         rating.score,

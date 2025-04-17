@@ -1,32 +1,22 @@
-package com.smashrating.user.implement;
+package com.smashrating.user.application;
 
+import com.smashrating.user.application.command.UserCommandService;
 import com.smashrating.user.domain.User;
 import com.smashrating.user.UserTestFactory;
 import com.smashrating.user.infrastructure.FakePasswordEncoder;
 import com.smashrating.user.infrastructure.FakeUserRepository;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.ActiveProfiles;
 
-class UserWriterTest {
+class UserCommandServiceTest {
 
-    private UserWriter userWriter;
+    private UserCommandService userWriter;
 
     @BeforeEach
     void setUp() {
-        userWriter = new UserWriter(new FakeUserRepository(), new FakePasswordEncoder());
+        userWriter = new UserCommandService(new FakeUserRepository(), new FakePasswordEncoder());
     }
 
     @Test

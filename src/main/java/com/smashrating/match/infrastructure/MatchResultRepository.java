@@ -1,8 +1,9 @@
 package com.smashrating.match.infrastructure;
 
-import com.smashrating.match.domain.MatchResult;
-import com.smashrating.match.infrastructure.querydsl.MatchResultRepositoryCustom;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.smashrating.match.dto.MatchResultResponse;
 
-public interface MatchResultRepository extends JpaRepository<MatchResult, Long>, MatchResultRepositoryCustom {
+import java.util.List;
+
+public interface MatchResultRepository {
+    List<MatchResultResponse> getMatchHistory(Long userId, Long lastMatchResultId, int size);
 }

@@ -44,14 +44,14 @@ class JwtParserTest {
     void init() {
         // 유효한 토큰 생성: subject, username, role 값을 포함
         validUserToken = Jwts.builder()
-                .setSubject("testUser")
+                .subject("testUser")
                 .claim("username", "testUser")
                 .claim("role", "USER")
                 .signWith(key)
                 .compact();
 
         validAdminToken = Jwts.builder()
-                .setSubject("adminUser")
+                .subject("adminUser")
                 .claim("username", "adminUser")
                 .claim("role", "ADMIN")
                 .signWith(key)
@@ -62,16 +62,14 @@ class JwtParserTest {
     }
 
     @Test
-    @DisplayName("유효한 토큰이 주어지면 true를 반환한다.")
+    @DisplayName("유효한 토큰이 주어지면 예외를 반환하지 않고 넘어간다.")
     void validateToken_validToken() {
-        // 유효한 토큰 생성: subject, username, role 값을 포함
         jwtParser.validateToken(validUserToken);
     }
 
     @Test
     @DisplayName("유효하지 않은 토큰이 주어지면 예외를 던진다.")
     void validateToken_invalidToken() {
-        // 의미없는 토큰 문자열
         Assertions.assertThatThrownBy(() -> jwtParser.validateToken(invalidToken))
                         .isInstanceOf(AuthException.class)
                         .hasMessageContaining("Invalid token");
@@ -80,12 +78,11 @@ class JwtParserTest {
     @Test
     @DisplayName("만료된 토큰이 주어지면 예외를 던진다.")
     void validateToken_expiredToken() {
-        // 만료된 토큰 생성
         String expiredToken = Jwts.builder()
                 .subject("testUser")
                 .claim("username", "testUser")
                 .claim("role", "USER")
-                .expiration(new Date(System.currentTimeMillis() - 1000)) // 현재 시간보다 1초 이전으로 설정
+                .expiration(new Date(System.currentTimeMillis() - 1000))
                 .signWith(key)
                 .compact();
 
@@ -108,6 +105,7 @@ class JwtParserTest {
     @DisplayName("관리자 JWT에서 Authentication 토큰을 추출한다.")
     void getAuthentication_adminToken() {
         var authentication = jwtParser.getAuthentication(validAdminToken);
+
         assertThat(authentication).isNotNull();
         assertThat(authentication.getName()).isEqualTo("adminUser");
         assertThat(authentication.getAuthorities()).extracting("authority")

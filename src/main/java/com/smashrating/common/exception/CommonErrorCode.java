@@ -14,6 +14,9 @@ public enum CommonErrorCode implements ErrorCode {
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "Could not find the resource"),
     URL_NOT_FOUND(HttpStatus.NOT_FOUND, "Could not find the URL"),
     VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "Validation error"),
+
+    // Auth Error
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "Unauthorized"),
     ;
 
     private final HttpStatus status;

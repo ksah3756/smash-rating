@@ -1,4 +1,4 @@
-package com.smashrating.user.implement;
+package com.smashrating.user.application.query;
 
 import com.smashrating.user.domain.User;
 import com.smashrating.user.exception.UserErrorCode;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UserReader {
+public class UserQueryService {
     private final UserRepository userRepository;
 
     public User getUserByUsername(String username) {

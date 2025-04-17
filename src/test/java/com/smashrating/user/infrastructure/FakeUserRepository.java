@@ -30,6 +30,13 @@ public class FakeUserRepository implements UserRepository {
     }
 
     @Override
+    public Optional<User> findById(Long userId) {
+        return users.stream()
+                .filter(user -> user.getId().equals(userId))
+                .findFirst();
+    }
+
+    @Override
     public Optional<User> findByUsername(String username) {
         return users.stream()
                 .filter(user -> user.getUsername().equals(username))

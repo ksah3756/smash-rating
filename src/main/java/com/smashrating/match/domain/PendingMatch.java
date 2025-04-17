@@ -30,4 +30,20 @@ public class PendingMatch extends BaseEntity {
     @NotNull
     @Enumerated(EnumType.STRING)
     private PendingMatchStatus status;
+
+    public static PendingMatch create(Long sendUserId, Long receiveUserId) {
+        return PendingMatch.builder()
+                .sendUserId(sendUserId)
+                .receiveUserId(receiveUserId)
+                .status(PendingMatchStatus.PENDING)
+                .build();
+    }
+
+    public void accept() {
+        this.status = PendingMatchStatus.ACCEPTED;
+    }
+
+    public void reject() {
+        this.status = PendingMatchStatus.REJECTED;
+    }
 }

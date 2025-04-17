@@ -1,14 +1,14 @@
-package com.smashrating.user.application;
+package com.smashrating.user.facade;
 
 import com.smashrating.common.exception.CustomException;
 import com.smashrating.user.UserCreateRequestTestFactory;
 import com.smashrating.user.UserTestFactory;
+import com.smashrating.user.application.command.UserCommandService;
+import com.smashrating.user.application.UserValidatorService;
 import com.smashrating.user.domain.User;
 import com.smashrating.user.dto.UserCreateRequest;
 import com.smashrating.user.dto.UserCreateResponse;
 import com.smashrating.user.exception.UserErrorCode;
-import com.smashrating.user.implement.UserValidator;
-import com.smashrating.user.implement.UserWriter;
 import com.smashrating.user.infrastructure.FakeApplicationEventPublisher;
 import com.smashrating.user.infrastructure.FakePasswordEncoder;
 import com.smashrating.user.infrastructure.FakeUserRepository;
@@ -22,21 +22,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 
-class UserServiceTest {
+class UserFacadeTest {
 
     private UserRepository userRepository;
-    private UserValidator userValidator;
-    private UserWriter userWriter;
+    private UserValidatorService userValidator;
+    private UserCommandService userWriter;
     private ApplicationEventPublisher eventPublisher;
-    private UserService userService;
+    private UserFacade userService;
 
     @BeforeEach
     void setUp() {
         userRepository = new FakeUserRepository();
-        userValidator = new UserValidator(userRepository);
-        userWriter = new UserWriter(userRepository, new FakePasswordEncoder());
+        userValidator = new UserValidatorService(userRepository);
+        userWriter = new UserCommandService(userRepository, new FakePasswordEncoder());
         eventPublisher = new FakeApplicationEventPublisher();
-        userService = new UserService(userWriter, userValidator, eventPublisher);
+        userService = new UserFacade(userWriter, userValidator, eventPublisher);
     }
 
 

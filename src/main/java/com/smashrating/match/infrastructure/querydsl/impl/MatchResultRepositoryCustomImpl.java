@@ -28,6 +28,7 @@ public class MatchResultRepositoryCustomImpl implements MatchResultRepositoryCus
 
         return jpaQueryFactory.select(Projections.constructor(
                         MatchResultResponse.class,
+                        matchResult.id,
                         opponent.username,
                         opponent.nickname,
                         matchResult.userInfo.gameScore,
