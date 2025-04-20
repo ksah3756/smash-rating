@@ -26,4 +26,8 @@ public class PendingMatchCommandService {
         match.accept();
     }
 
+    public void rejectPendingMatch(PendingMatch match) {
+        match.reject();
+    }
+
 }

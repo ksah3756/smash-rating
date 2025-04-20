@@ -10,6 +10,7 @@ import com.smashrating.match.dto.PendingMatchResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,15 +49,18 @@ public class MatchController {
     }
 
     @PostMapping("/{matchId}/accept")
-    public ResponseEntity<Void> acceptMatch(
-            @AuthUserId Long userId,
-            @PathVariable Long matchId) {
+    public ResponseEntity<Void> acceptMatch(@AuthUserId Long userId, @PathVariable Long matchId) {
         matchFacade.acceptMatch(userId, matchId);
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/{matchId}/reject")
+    public ResponseEntity<Void> rejectMatch(@AuthUserId Long userId, @PathVariable Long matchId) {
+        matchFacade.rejectMatch(userId, matchId);
+        return ResponseEntity.ok().build();
+    }
 
-
+    // TODO: 매치 결과 기입 API
 
 
 }

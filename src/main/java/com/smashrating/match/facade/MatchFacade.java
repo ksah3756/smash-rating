@@ -1,6 +1,6 @@
 package com.smashrating.match.facade;
 
-import com.smashrating.auth.dto.UserPrincipal;
+import com.smashrating.match.application.PendingMatchValidateService;
 import com.smashrating.match.application.command.PendingMatchCommandService;
 import com.smashrating.match.domain.PendingMatch;
 import com.smashrating.match.dto.MatchResultRequest;
@@ -9,9 +9,6 @@ import com.smashrating.match.dto.PendingMatchCreateRequest;
 import com.smashrating.match.dto.PendingMatchResponse;
 import com.smashrating.match.application.query.MatchResultQueryService;
 import com.smashrating.match.application.query.PendingMatchQueryService;
-import com.smashrating.match.enums.PendingMatchStatus;
-import com.smashrating.match.exception.MatchErrorCode;
-import com.smashrating.match.exception.MatchException;
 import com.smashrating.user.application.query.UserQueryService;
 import com.smashrating.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +22,7 @@ import java.util.List;
 public class MatchFacade {
     private final PendingMatchQueryService pendingMatchQueryService;
     private final PendingMatchCommandService pendingMatchCommandService;
+    private final PendingMatchValidateService pendingMatchValidateService;
     private final MatchResultQueryService matchResultQueryService;
     private final UserQueryService userQueryService;
 
@@ -55,12 +53,22 @@ public class MatchFacade {
     @Transactional
     public void acceptMatch(Long userId, Long matchId) {
         PendingMatch match = pendingMatchQueryService.getPendingMatchById(matchId);
-        if(!match.getReceiveUserId().equals(userId)) {
-            throw new MatchException(MatchErrorCode.MATCH_NOT_RECEIVER);
-        }
-        if(match.getStatus() != PendingMatchStatus.PENDING) {
-            throw new MatchException(MatchErrorCode.MATCH_ALREADY_ACCEPTED);
-        }
+        validatePendingMatchStatusAndReceiver(userId, match);
+
         pendingMatchCommandService.acceptPendingMatch(match);
+    }
+
+    @Transactional
+    public void rejectMatch(Long userId, Long matchId) {
+        PendingMatch match = pendingMatchQueryService.getPendingMatchById(matchId);
+        validatePendingMatchStatusAndReceiver(userId, match);
+
+        pendingMatchCommandService.rejectPendingMatch(match);
+    }
+
+    // PendingMatch의 상태가 Pending인지, PendingMatch의 receiver가 요청한 유저가 맞는지 확인
+    private void validatePendingMatchStatusAndReceiver(Long userId, PendingMatch match) {
+        pendingMatchValidateService.validatePendingStatus(match);
+        pendingMatchValidateService.validateReceiver(match, userId);
     }
 }
