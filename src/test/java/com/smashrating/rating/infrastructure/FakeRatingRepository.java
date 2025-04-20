@@ -21,7 +21,7 @@ public class FakeRatingRepository implements RatingRepository {
 
     @Override
     public Optional<Rating> findById(Long id) {
-        return Optional.of(ratings.get(id));
+        return Optional.ofNullable(ratings.get(id));
     }
 
     @Override

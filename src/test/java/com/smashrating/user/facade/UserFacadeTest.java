@@ -1,44 +1,30 @@
 package com.smashrating.user.facade;
 
+import com.smashrating.common.annotation.IntegrationTest;
 import com.smashrating.common.exception.CustomException;
 import com.smashrating.user.UserCreateRequestTestFactory;
 import com.smashrating.user.UserTestFactory;
-import com.smashrating.user.application.command.UserCommandService;
-import com.smashrating.user.application.UserValidatorService;
 import com.smashrating.user.domain.User;
 import com.smashrating.user.dto.UserCreateRequest;
 import com.smashrating.user.dto.UserCreateResponse;
 import com.smashrating.user.exception.UserErrorCode;
-import com.smashrating.user.infrastructure.FakeApplicationEventPublisher;
-import com.smashrating.user.infrastructure.FakePasswordEncoder;
-import com.smashrating.user.infrastructure.FakeUserRepository;
 import com.smashrating.user.infrastructure.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-
+@IntegrationTest
 class UserFacadeTest {
 
+    @Autowired
     private UserRepository userRepository;
-    private UserValidatorService userValidator;
-    private UserCommandService userWriter;
-    private ApplicationEventPublisher eventPublisher;
-    private UserFacade userService;
 
-    @BeforeEach
-    void setUp() {
-        userRepository = new FakeUserRepository();
-        userValidator = new UserValidatorService(userRepository);
-        userWriter = new UserCommandService(userRepository, new FakePasswordEncoder());
-        eventPublisher = new FakeApplicationEventPublisher();
-        userService = new UserFacade(userWriter, userValidator, eventPublisher);
-    }
-
+    @Autowired
+    private UserFacade userFacade;
 
     @Test
     @DisplayName("username 중복이면 예외를 던진다")
@@ -46,12 +32,60 @@ class UserFacadeTest {
         // given
         User user = UserTestFactory.createDefaultUser();
         userRepository.save(user);
-        UserCreateRequest request = UserCreateRequestTestFactory.createDefaultRequest();
+        UserCreateRequest request = UserCreateRequest.builder()
+                .username("testUser") // username 중복
+                .password("testPassword")
+                .realName("testName")
+                .nickname("uniqueNickname")
+                .email("unique@test.com")
+                .build();
 
         // expect
-        assertThatThrownBy(() -> userService.createMember(request))
+        assertThatThrownBy(() -> userFacade.createMember(request))
                 .isInstanceOf(CustomException.class)
                 .hasMessageContaining(UserErrorCode.USER_USERNAME_DUPLICATE.getMessage());
+    }
+
+    @Test
+    @DisplayName("email 중복이면 예외를 던진다")
+    void createMember_throwsException_whenEmailDuplicate() {
+        // given
+        User user = UserTestFactory.createDefaultUser();
+        userRepository.save(user);
+
+        UserCreateRequest request = UserCreateRequest.builder()
+                .username("uniqueUser")
+                .password("testPassword")
+                .realName("testName")
+                .nickname("uniqueNickname")
+                .email("testEmail@test.com") // 이메일 중복
+                .build();
+
+        // expect
+        assertThatThrownBy(() -> userFacade.createMember(request))
+                .isInstanceOf(CustomException.class)
+                .hasMessageContaining(UserErrorCode.USER_EMAIL_DUPLICATE.getMessage());
+    }
+
+    @Test
+    @DisplayName("nickname 중복이면 예외를 던진다")
+    void createMember_throwsException_whenNicknameDuplicate() {
+        // given
+        User user = UserTestFactory.createDefaultUser();
+        userRepository.save(user);
+
+        UserCreateRequest request = UserCreateRequest.builder()
+                .username("uniqueUser")
+                .password("testPassword")
+                .realName("testName")
+                .nickname("testNickname") // 닉네임 중복
+                .email("unique@test.com")
+                .build();
+
+        // expect
+        assertThatThrownBy(() -> userFacade.createMember(request))
+                .isInstanceOf(CustomException.class)
+                .hasMessageContaining(UserErrorCode.USER_NAME_DUPLICATE.getMessage());
     }
 
     @Test
@@ -61,9 +95,9 @@ class UserFacadeTest {
         UserCreateRequest request = UserCreateRequestTestFactory.createDefaultRequest();
 
         // when
-        UserCreateResponse response = userService.createMember(request);
+        UserCreateResponse response = userFacade.createMember(request);
 
         // then
-        assertThat(response.id()).isEqualTo(1L);
+        assertThat(response.id()).isNotNull();
     }
 }

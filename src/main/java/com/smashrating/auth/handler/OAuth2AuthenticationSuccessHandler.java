@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,10 @@ import static com.smashrating.auth.enums.util.CookieUtils.createCookie;
 @Component
 @RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+
+    @Value("$app.frontend.base-url")
+    private String frontendBaseUrl;
+
     private final JwtProvider jwtProvider;
 
     @Override
@@ -27,6 +32,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         response.addCookie(createCookie("accessToken", accessToken, CookieExp.ACCESS_TOKEN.getExpiry()));
         response.addCookie(createCookie("refreshToken", refreshToken, CookieExp.REFRESH_TOKEN.getExpiry()));
-        response.sendRedirect("http://localhost:3000/");
+        response.sendRedirect(frontendBaseUrl);
     }
 }

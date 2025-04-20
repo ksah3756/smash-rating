@@ -1,6 +1,7 @@
 package com.smashrating.match.facade;
 
 import com.smashrating.auth.TestSecurityConfig;
+import com.smashrating.common.annotation.IntegrationTest;
 import com.smashrating.match.MatchResultTestFactory;
 import com.smashrating.match.application.PendingMatchValidateService;
 import com.smashrating.match.application.command.PendingMatchCommandService;
@@ -40,10 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@Transactional
-@Import(TestSecurityConfig.class)
+@IntegrationTest
 class MatchFacadeTest {
 
     @Autowired

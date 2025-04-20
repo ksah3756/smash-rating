@@ -35,8 +35,8 @@ class UserValidatorServiceTest {
                 "testUser",
                 "testPassword",
                 "testName",
-                "testNickname",
-                "testEmail@gmail.com",
+                "uniqueNickname",
+                "unique@gmail.com",
                 Role.ROLE_USER
         );
 
@@ -56,7 +56,7 @@ class UserValidatorServiceTest {
 
         // when
         User user2 = User.create(
-                "testUser2",
+                "uniqueUsername",
                 "testPassword",
                 "testName",
                 "testNickname",
@@ -79,7 +79,7 @@ class UserValidatorServiceTest {
 
         // when
         User user2 = User.create(
-                "testUser2",
+                "uniqueUsername",
                 "testPassword",
                 "testName",
                 "testNickname",
@@ -101,14 +101,58 @@ class UserValidatorServiceTest {
 
         // when
         User user2 = User.create(
-                "testUser2",
+                "uniqueUsername",
                 "testPassword",
                 "testName",
                 "testNickname",
-                "testEmail2@gmail.com",
+                "unique@gmail.com",
                 Role.ROLE_USER
         );
         boolean isDuplicate = userValidator.isEmailDuplicate(user2.getEmail());
+
+        // then
+        assertFalse(isDuplicate);
+    }
+
+    @Test
+    @DisplayName("닉네임이 중복될 경우 true를 반환한다.")
+    void isNicknameDuplicate_duplicate() {
+        // given
+        User user = UserTestFactory.createDefaultUser();
+        userRepository.save(user);
+
+        // when
+        User user2 = User.create(
+                "uniqueUsername",
+                "testPassword",
+                "testName",
+                "testNickname",
+                "unique@gmail.com",
+                Role.ROLE_USER
+        );
+        boolean isDuplicate = userValidator.isNicknameDuplicate(user2.getNickname());
+
+        // then
+        assertTrue(isDuplicate);
+    }
+
+    @Test
+    @DisplayName("닉네임이 중복되지 않을 경우 false를 반환한다.")
+    void isNicknameDuplicate_notDuplicate() {
+        // given
+        User user = UserTestFactory.createDefaultUser();
+        userRepository.save(user);
+
+        // when
+        User user2 = User.create(
+                "uniqueUsername",
+                "testPassword",
+                "testName",
+                "uniqueNickname",
+                "unique@gmail.com",
+                Role.ROLE_USER
+        );
+        boolean isDuplicate = userValidator.isNicknameDuplicate(user2.getNickname());
 
         // then
         assertFalse(isDuplicate);
