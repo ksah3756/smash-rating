@@ -24,7 +24,6 @@ public class MatchResultRepositoryCustomImpl implements MatchResultRepositoryCus
     public List<MatchResultResponse> getMatchHistory(Long userId, Long lastMatchResultId, int size) {
         QMatchResult matchResult = QMatchResult.matchResult;
         QUser opponent = QUser.user;
-        QRating opponentRating = QRating.rating;
 
         return jpaQueryFactory.select(Projections.constructor(
                         MatchResultResponse.class,

@@ -47,10 +47,10 @@ class MatchResultQueryServiceTest {
                 .forEach(matchResultRepository::save);
     }
     @Test
-    @DisplayName("마지막으로 조회한 매치 결과 ID 이후의 매치 결과를 size개 만큼 조회한다.")
+    @DisplayName("마지막 조회 ID 이전의 매치 결과를 최신순(pk 역순)으로 size 만큼 조회할 수 있다")
     void getMatchHistory() {
         // when
-        Long lastMatchResultId = 9L;
+        Long lastMatchResultId = 21L;
         int size = 10;
         List<MatchResultResponse> matchHistory = matchResultQueryService.getMatchHistory(user.getId(), lastMatchResultId, size);
 
@@ -58,7 +58,7 @@ class MatchResultQueryServiceTest {
         assertEquals(size, matchHistory.size());
         IntStream.range(0, matchHistory.size()).forEach(i -> {
             MatchResultResponse matchResultResponse = matchHistory.get(i);
-            assertEquals(matchResultResponse.id(), lastMatchResultId+1+i);
+            assertEquals(matchResultResponse.id(), lastMatchResultId-1-i);
             assertEquals(opponentUser.getUsername(), matchResultResponse.opponentUsername());
             assertEquals(opponentUser.getNickname(), matchResultResponse.opponentNickname());
             assertEquals(15, matchResultResponse.myGameScore());

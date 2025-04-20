@@ -10,6 +10,7 @@ import com.smashrating.user.infrastructure.UserRepository;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -26,9 +27,10 @@ public class FakeMatchResultRepository implements MatchResultRepository {
     @Override
     public List<MatchResultResponse> getMatchHistory(Long userId, Long lastMatchResultId, int size) {
         return matchResults.stream()
-                .filter(matchResult -> matchResult.getId() > lastMatchResultId)
+                .filter(matchResult -> matchResult.getId() < lastMatchResultId) // 가장 최근 매치 결과부터 가져오기
                 .filter(matchResult -> matchResult.getUserInfo().getUserId().equals(userId))
                 .filter(matchResult -> matchResult.getStatus().equals(MatchResultStatus.COMPLETED))
+                .sorted(Comparator.comparing(MatchResult::getId).reversed())
                 .map(matchResult -> {
                     User opponent = userRepository.findById(matchResult.getOpponentInfo().getUserId())
                             .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
@@ -59,6 +61,7 @@ public class FakeMatchResultRepository implements MatchResultRepository {
         return savedMatchResult;
     }
 
+    @Override
     public List<MatchResult> saveAll(List<MatchResult> matchResults) {
         List<MatchResult> savedMatchResults = new ArrayList<>();
         for (MatchResult matchResult : matchResults) {

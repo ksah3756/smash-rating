@@ -26,4 +26,9 @@ public class MatchResultRepositoryImpl implements MatchResultRepository {
     public MatchResult save(MatchResult matchResult) {
         return matchResultRepository.save(matchResult);
     }
+
+    @Override
+    public List<MatchResult> saveAll(List<MatchResult> matchResults) {
+        return matchResultRepository.saveAll(matchResults);
+    }
 }
