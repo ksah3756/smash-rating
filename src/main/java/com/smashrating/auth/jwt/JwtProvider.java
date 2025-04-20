@@ -38,12 +38,12 @@ public class JwtProvider {
 
     public String generateAccessToken(Authentication authentication) {
         UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
-        return generateToken(principal.getUsername(), ACCESS_TOKEN_EXP.getExp(), principal.getRole().toString());
+        return generateToken(principal.getUsername(), ACCESS_TOKEN_EXP.getExp(), principal.getRole());
     }
 
     public String generateRefreshToken(Authentication authentication) {
         UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
-        return generateToken(principal.getUsername(), REFRESH_TOKEN_EXP.getExp(), principal.getRole().toString());
+        return generateToken(principal.getUsername(), REFRESH_TOKEN_EXP.getExp(), principal.getRole());
     }
 
 
