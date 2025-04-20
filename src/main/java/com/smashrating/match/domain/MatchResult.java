@@ -36,4 +36,17 @@ public class MatchResult extends BaseEntity {
 
     @NotNull
     private Double updatedRatingScore;
+
+    public void complete() {
+        this.status = MatchResultStatus.COMPLETED;
+    }
+
+    public static MatchResult create(MatchUserInfo userInfo, MatchUserInfo opponentInfo, Double updatedRatingScore) {
+        return MatchResult.builder()
+                .userInfo(userInfo)
+                .opponentInfo(opponentInfo)
+                .status(MatchResultStatus.PENDING)
+                .updatedRatingScore(updatedRatingScore)
+                .build();
+    }
 }

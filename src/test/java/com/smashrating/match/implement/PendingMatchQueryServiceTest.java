@@ -21,12 +21,12 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-class PendingMatchReaderTest {
+class PendingMatchQueryServiceTest {
 
     private UserRepository userRepository;
     private RatingRepository ratingRepository;
     private PendingMatchRepository pendingMatchRepository;
-    private PendingMatchQueryService pendingMatchReader;
+    private PendingMatchQueryService pendingMatchQueryService;
 
     private User sendUser, receiveUser;
 
@@ -35,7 +35,7 @@ class PendingMatchReaderTest {
         userRepository = new FakeUserRepository();
         ratingRepository = new FakeRatingRepository();
         pendingMatchRepository = new FakePendingMatchRepository(userRepository, ratingRepository);
-        pendingMatchReader = new PendingMatchQueryService(pendingMatchRepository);
+        pendingMatchQueryService = new PendingMatchQueryService(pendingMatchRepository);
 
         initPendingMatchData();
     }
@@ -66,7 +66,7 @@ class PendingMatchReaderTest {
     @DisplayName("요청받은 매치를 조회한다.")
     void getReceivedPendingMatch() {
         // when
-        List<PendingMatchResponse> receivedPendingMatch = pendingMatchReader.getReceivedPendingMatch(receiveUser.getId());
+        List<PendingMatchResponse> receivedPendingMatch = pendingMatchQueryService.getReceivedPendingMatch(receiveUser.getId());
 
         // then
         assertThat(receivedPendingMatch).hasSize(1);
@@ -76,7 +76,7 @@ class PendingMatchReaderTest {
     @Test
     void getSentPendingMatch() {
         // when
-        List<PendingMatchResponse> sentPendingMatch = pendingMatchReader.getSentPendingMatch(sendUser.getId());
+        List<PendingMatchResponse> sentPendingMatch = pendingMatchQueryService.getSentPendingMatch(sendUser.getId());
 
         // then
         assertThat(sentPendingMatch).hasSize(1);
