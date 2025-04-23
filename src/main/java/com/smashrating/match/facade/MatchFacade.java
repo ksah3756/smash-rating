@@ -9,6 +9,8 @@ import com.smashrating.match.dto.PendingMatchCreateRequest;
 import com.smashrating.match.dto.PendingMatchResponse;
 import com.smashrating.match.application.query.MatchResultQueryService;
 import com.smashrating.match.application.query.PendingMatchQueryService;
+import com.smashrating.match.exception.MatchErrorCode;
+import com.smashrating.match.exception.MatchException;
 import com.smashrating.user.application.query.UserQueryService;
 import com.smashrating.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +46,9 @@ public class MatchFacade {
     @Transactional
     public void createPendingMatch(Long userId, PendingMatchCreateRequest matchRequest) {
         User opponent = userQueryService.getUserByUsername(matchRequest.opponentUsername());
+        if (userId.equals(opponent.getId())) {
+            throw new MatchException(MatchErrorCode.MATCH_ILLEGAL_REQUEST);
+        }
         pendingMatchCommandService.createPendingMatch(
                 userId,
                 opponent.getId()

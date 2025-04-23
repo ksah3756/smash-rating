@@ -12,7 +12,7 @@ public enum UserErrorCode implements ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User not found"),
     USER_USERNAME_DUPLICATE(HttpStatus.CONFLICT, "Username already exists"),
     USER_EMAIL_DUPLICATE(HttpStatus.CONFLICT, "Email already exists"),
-    USER_NAME_DUPLICATE(HttpStatus.CONFLICT, "Name already exists"),
+    USER_NICKNAME_DUPLICATE(HttpStatus.CONFLICT, "Nickname already exists"),
     ;
 
     private final HttpStatus status;

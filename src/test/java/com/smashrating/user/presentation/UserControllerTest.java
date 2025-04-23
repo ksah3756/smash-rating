@@ -45,7 +45,13 @@ class UserControllerTest {
     @Test
     @DisplayName("요청 바디를 제대로 기입하지 않을 경우 회원가입에 실패한다.")
     void register_notValidRequestBody() throws Exception {
-        UserCreateRequest request = UserCreateRequestTestFactory.createDefaultRequest();
+        UserCreateRequest request = UserCreateRequest.builder()
+                .username("")
+                .password("testPassword")
+                .realName("testRealName")
+                .nickname("testNickname")
+                .email("testEmail")
+                .build();
 
         String req = new ObjectMapper().writeValueAsString(request);
         mockMvc.perform(post("/user/register")

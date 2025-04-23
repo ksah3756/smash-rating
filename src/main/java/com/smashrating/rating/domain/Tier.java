@@ -3,10 +3,12 @@ package com.smashrating.rating.domain;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Arrays;
+
 @Getter
 @RequiredArgsConstructor
 public enum Tier {
-    UNRANKED(0, Integer.MAX_VALUE),
+    UNRANKED(0, 999),
 
     BRONZE_4(1000, 1099),
     BRONZE_3(1100, 1199),
@@ -38,4 +40,27 @@ public enum Tier {
 
     private final int minScore;
     private final int maxScore;
+
+    public static Tier fromScore(int score) {
+        for (Tier tier : values()) {
+            if (score >= tier.minScore && score <= tier.maxScore) {
+                return tier;
+            }
+        }
+        return UNRANKED;
+    }
+
+    public static Tier getTierByScoreAndMatches(double score, int matchCount) {
+        if (matchCount < 5) {
+            return UNRANKED;
+        }
+
+        // 점수에 따른 티어 결정
+        return Arrays.stream(Tier.values())
+                .filter(tier -> tier != UNRANKED &&
+                        score >= tier.getMinScore() &&
+                        score <= tier.getMaxScore())
+                .findFirst()
+                .orElse(UNRANKED);
+    }
 }

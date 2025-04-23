@@ -2,6 +2,8 @@ package com.smashrating.match.domain;
 
 import com.smashrating.common.BaseEntity;
 import com.smashrating.match.enums.PendingMatchStatus;
+import com.smashrating.match.exception.MatchErrorCode;
+import com.smashrating.match.exception.MatchException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -40,10 +42,16 @@ public class PendingMatch extends BaseEntity {
     }
 
     public void accept() {
+        if (this.status != PendingMatchStatus.PENDING) {
+            throw new MatchException(MatchErrorCode.MATCH_NOT_PENDING);
+        }
         this.status = PendingMatchStatus.ACCEPTED;
     }
 
     public void reject() {
+        if (this.status != PendingMatchStatus.PENDING) {
+            throw new MatchException(MatchErrorCode.MATCH_NOT_PENDING);
+        }
         this.status = PendingMatchStatus.REJECTED;
     }
 }

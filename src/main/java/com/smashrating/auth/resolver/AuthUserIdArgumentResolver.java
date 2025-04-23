@@ -16,26 +16,28 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 @RequiredArgsConstructor
 public class AuthUserIdArgumentResolver implements HandlerMethodArgumentResolver {
-    private final UserQueryService userReader;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        // @CurrentManager 애노테이션이 붙어 있고, 파라미터 타입이 Manager여야 함.
         return parameter.getParameterAnnotation(AuthUserId.class) != null
-                && User.class.isAssignableFrom(parameter.getParameterType());
+                && Long.class.isAssignableFrom(parameter.getParameterType());
     }
 
     @Override
     public Long resolveArgument(MethodParameter parameter,
-                                                                  ModelAndViewContainer mavContainer,
-                                                                  NativeWebRequest webRequest,
-                                                                  WebDataBinderFactory binderFactory) throws Exception
+                                ModelAndViewContainer mavContainer,
+                                NativeWebRequest webRequest,
+                                WebDataBinderFactory binderFactory) throws Exception
     {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication == null) {
             throw new CustomException(CommonErrorCode.UNAUTHORIZED);
         }
-        UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
-        return principal.getId();
+        Object principal = authentication.getPrincipal();
+        // anonymousUser 일 수 있으므로 instanceof로 체크 후 캐스팅
+        if (!(principal instanceof UserPrincipal userPrincipal)) {
+            throw new CustomException(CommonErrorCode.UNAUTHORIZED);
+        }
+        return userPrincipal.getId();
     }
 }

@@ -9,7 +9,6 @@ import com.smashrating.user.dto.UserCreateRequest;
 import com.smashrating.user.dto.UserCreateResponse;
 import com.smashrating.user.exception.UserErrorCode;
 import com.smashrating.user.infrastructure.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +27,7 @@ class UserFacadeTest {
 
     @Test
     @DisplayName("username 중복이면 예외를 던진다")
-    void createMember_throwsException_whenUsernameDuplicate() {
+    void createUser_throwsException_whenUsernameDuplicate() {
         // given
         User user = UserTestFactory.createDefaultUser();
         userRepository.save(user);
@@ -41,14 +40,14 @@ class UserFacadeTest {
                 .build();
 
         // expect
-        assertThatThrownBy(() -> userFacade.createMember(request))
+        assertThatThrownBy(() -> userFacade.createUser(request))
                 .isInstanceOf(CustomException.class)
                 .hasMessageContaining(UserErrorCode.USER_USERNAME_DUPLICATE.getMessage());
     }
 
     @Test
     @DisplayName("email 중복이면 예외를 던진다")
-    void createMember_throwsException_whenEmailDuplicate() {
+    void createUser_throwsException_whenEmailDuplicate() {
         // given
         User user = UserTestFactory.createDefaultUser();
         userRepository.save(user);
@@ -62,14 +61,14 @@ class UserFacadeTest {
                 .build();
 
         // expect
-        assertThatThrownBy(() -> userFacade.createMember(request))
+        assertThatThrownBy(() -> userFacade.createUser(request))
                 .isInstanceOf(CustomException.class)
                 .hasMessageContaining(UserErrorCode.USER_EMAIL_DUPLICATE.getMessage());
     }
 
     @Test
     @DisplayName("nickname 중복이면 예외를 던진다")
-    void createMember_throwsException_whenNicknameDuplicate() {
+    void createUser_throwsException_whenNicknameDuplicate() {
         // given
         User user = UserTestFactory.createDefaultUser();
         userRepository.save(user);
@@ -83,19 +82,19 @@ class UserFacadeTest {
                 .build();
 
         // expect
-        assertThatThrownBy(() -> userFacade.createMember(request))
+        assertThatThrownBy(() -> userFacade.createUser(request))
                 .isInstanceOf(CustomException.class)
-                .hasMessageContaining(UserErrorCode.USER_NAME_DUPLICATE.getMessage());
+                .hasMessageContaining(UserErrorCode.USER_NICKNAME_DUPLICATE.getMessage());
     }
 
     @Test
     @DisplayName("회원가입 성공")
-    void createMember_success() {
+    void createUser_success() {
         // given
         UserCreateRequest request = UserCreateRequestTestFactory.createDefaultRequest();
 
         // when
-        UserCreateResponse response = userFacade.createMember(request);
+        UserCreateResponse response = userFacade.createUser(request);
 
         // then
         assertThat(response.id()).isNotNull();

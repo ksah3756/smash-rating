@@ -23,6 +23,7 @@ public class FakeUserRepository implements UserRepository {
                 .nickname(user.getNickname())
                 .email(user.getEmail())
                 .role(user.getRole())
+                .rating(user.getRating())
                 .build();
 
         users.add(savedUser);

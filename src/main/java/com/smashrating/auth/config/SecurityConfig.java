@@ -50,12 +50,6 @@ public class SecurityConfig {
                         corsConfigurer.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
-                .exceptionHandling(handler ->
-                        handler.authenticationEntryPoint((request, response, authException) -> {
-                            log.error("Unauthorized error: {}", authException.getMessage());
-                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());
-                        })
-                )
                 .formLogin(AbstractHttpConfigurer::disable) // UsernamePasswordAuthenticationFilter disable
                 .oauth2Login(oauth2 ->
                         oauth2.userInfoEndpoint(userInfo -> userInfo.userService(oAuth2LoginUserService))
@@ -112,6 +106,7 @@ public class SecurityConfig {
 
     private static final String[] PUBLIC_ENDPOINTS = {
         "/user/register",
+        "/user/login",
     };
 
     CorsConfigurationSource corsConfigurationSource() {

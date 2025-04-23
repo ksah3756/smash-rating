@@ -17,7 +17,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserFacade userService;
+    private final UserFacade userFacade;
 
     @GetMapping("/my")
     public String myAPI() {
@@ -28,6 +28,6 @@ public class UserController {
     public ResponseEntity<UserCreateResponse> register(
             @RequestBody @Valid UserCreateRequest request
     ) {
-        return ResponseEntity.status(CREATED).body(userService.createMember(request));
+        return ResponseEntity.status(CREATED).body(userFacade.createUser(request));
     }
 }

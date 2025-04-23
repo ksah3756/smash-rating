@@ -153,8 +153,9 @@ class MatchFacadeTest {
         PendingMatchCreateRequest request = new PendingMatchCreateRequest("nonExistentUser");
 
         // when & then
-        assertThrows(UserException.class, () -> 
+        UserException userException = assertThrows(UserException.class, () ->
                 matchFacade.createPendingMatch(sender.getId(), request));
+        assertThat(userException.getErrorCode()).isEqualTo(UserErrorCode.USER_NOT_FOUND);
     }
 
     @Test
@@ -189,8 +190,9 @@ class MatchFacadeTest {
     @DisplayName("존재하지 않는 매치를 수락하려면 예외가 발생한다")
     void acceptNonExistentMatch() {
         // when & then
-        assertThrows(MatchException.class, () -> 
+        MatchException matchException = assertThrows(MatchException.class, () ->
                 matchFacade.acceptMatch(receiver.getId(), 999L));
+        assertThat(matchException.getErrorCode()).isEqualTo(MatchErrorCode.MATCH_NOT_FOUND);
     }
 
     @Test
@@ -199,8 +201,9 @@ class MatchFacadeTest {
         //given
         pendingMatchRepository.save(pendingMatch);
         // when & then
-        assertThrows(MatchException.class, () -> 
+        MatchException matchException = assertThrows(MatchException.class, () ->
                 matchFacade.acceptMatch(sender.getId(), pendingMatch.getId()));
+        assertThat(matchException.getErrorCode()).isEqualTo(MatchErrorCode.MATCH_NOT_RECEIVER);
     }
 
     @Test
@@ -211,7 +214,8 @@ class MatchFacadeTest {
         pendingMatchRepository.save(pendingMatch);
 
         // when & then
-        assertThrows(MatchException.class, () -> 
+        MatchException matchException = assertThrows(MatchException.class, () ->
                 matchFacade.acceptMatch(receiver.getId(), pendingMatch.getId()));
+        assertThat(matchException.getErrorCode()).isEqualTo(MatchErrorCode.MATCH_NOT_PENDING);
     }
 } 

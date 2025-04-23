@@ -6,6 +6,7 @@ import com.smashrating.leaderboard.dto.RankResponse;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,12 +24,14 @@ public class LeaderboardController {
     private final LeaderboardService leaderboardService;
 
     @GetMapping("/my")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<RankResponse> getMyRank(@AuthenticationPrincipal UserPrincipal user) {
         return ResponseEntity.ok().body(leaderboardService.getMyRank(user));
     }
 
 
     @GetMapping("/all")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<RankResponse>> getRankListByPage(
             @RequestParam(defaultValue = "1") @Positive int page
     ) {

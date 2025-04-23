@@ -12,15 +12,9 @@ import java.util.List;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    private final UserQueryService userReader;
-
-    public WebConfig(UserQueryService userReader) {
-        this.userReader = userReader;
-    }
-
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new AuthUserIdArgumentResolver(userReader));
+        resolvers.add(new AuthUserIdArgumentResolver());
     }
 
     @Override

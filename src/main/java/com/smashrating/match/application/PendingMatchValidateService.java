@@ -17,7 +17,7 @@ public class PendingMatchValidateService {
 
     public void validatePendingStatus(PendingMatch match) {
         if (match.getStatus() != PendingMatchStatus.PENDING) {
-            throw new MatchException(MatchErrorCode.MATCH_ALREADY_ACCEPTED);
+            throw new MatchException(MatchErrorCode.MATCH_NOT_PENDING);
         }
     }
 

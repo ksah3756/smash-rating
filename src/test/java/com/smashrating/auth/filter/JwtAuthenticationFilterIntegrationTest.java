@@ -4,6 +4,7 @@ import com.smashrating.auth.dto.UserDto;
 import com.smashrating.auth.dto.UserPrincipal;
 import com.smashrating.auth.jwt.JwtProvider;
 import jakarta.servlet.http.Cookie;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -51,6 +52,7 @@ class JwtAuthenticationFilterIntegrationTest {
     private JwtProvider jwtProvider;
 
     @Test
+    @DisplayName("유효한 토큰을 검증하고 200을 반환한다.")
     void validToken_setsAuthenticationInSecurityContext() throws Exception {
         // given;
         UserDto userDto = UserDto.of("ROLE_USER", 1L, "testName", "testId");
@@ -63,6 +65,7 @@ class JwtAuthenticationFilterIntegrationTest {
     }
 
     @Test
+    @DisplayName("토큰이 없는 경우 401을 반환한다.")
     void missingToken_doesNotSetAuthentication() throws Exception {
         mockMvc.perform(get("/test"))
                 .andExpect(status().isUnauthorized());
