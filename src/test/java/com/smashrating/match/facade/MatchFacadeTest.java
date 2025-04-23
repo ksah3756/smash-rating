@@ -1,12 +1,8 @@
 package com.smashrating.match.facade;
 
-import com.smashrating.auth.TestSecurityConfig;
+import com.smashrating.auth.dto.UserDto;
 import com.smashrating.common.annotation.IntegrationTest;
 import com.smashrating.match.MatchResultTestFactory;
-import com.smashrating.match.application.PendingMatchValidateService;
-import com.smashrating.match.application.command.PendingMatchCommandService;
-import com.smashrating.match.application.query.MatchResultQueryService;
-import com.smashrating.match.application.query.PendingMatchQueryService;
 import com.smashrating.match.domain.MatchResult;
 import com.smashrating.match.domain.PendingMatch;
 import com.smashrating.match.dto.MatchResultRequest;
@@ -19,8 +15,6 @@ import com.smashrating.match.exception.MatchException;
 import com.smashrating.match.infrastructure.MatchResultRepository;
 import com.smashrating.match.infrastructure.PendingMatchRepository;
 import com.smashrating.user.UserTestFactory;
-import com.smashrating.user.application.query.UserQueryService;
-import com.smashrating.user.domain.Role;
 import com.smashrating.user.domain.User;
 import com.smashrating.user.exception.UserErrorCode;
 import com.smashrating.user.exception.UserException;
@@ -29,10 +23,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.IntStream;
@@ -62,6 +52,9 @@ class MatchFacadeTest {
     private User opponent;
     private PendingMatch pendingMatch;
 
+    private UserDto senderDto;
+    private UserDto receiverDto;
+
     @BeforeEach
     void setUp() {
         User user1 = UserTestFactory.createUser1();
@@ -69,6 +62,8 @@ class MatchFacadeTest {
 
         sender = userRepository.save(user1);
         receiver = userRepository.save(user2);
+        senderDto = UserDto.of(sender.getRole().toString(), sender.getId(), sender.getUsername(), null);
+        receiverDto = UserDto.of(receiver.getRole().toString(), receiver.getId(), receiver.getUsername(), null);
         me = sender;
         opponent = receiver;
 
@@ -82,7 +77,7 @@ class MatchFacadeTest {
         pendingMatchRepository.save(pendingMatch);
 
         // when
-        List<PendingMatchResponse> responses = matchFacade.getReceivedMatches(receiver.getId());
+        List<PendingMatchResponse> responses = matchFacade.getReceivedMatches(receiverDto);
 
         // then
         assertThat(responses).hasSize(1);
@@ -97,7 +92,7 @@ class MatchFacadeTest {
         pendingMatchRepository.save(pendingMatch);
 
         // when
-        List<PendingMatchResponse> responses = matchFacade.getSentMatches(sender.getId());
+        List<PendingMatchResponse> responses = matchFacade.getSentMatches(senderDto);
 
         // then
         assertThat(responses).hasSize(1);
@@ -116,7 +111,7 @@ class MatchFacadeTest {
         Long lastMatchResultId = 11L;
         int size = 10;
         MatchResultRequest request = new MatchResultRequest(lastMatchResultId, size);
-        List<MatchResultResponse> matchHistory = matchFacade.getMatchHistory(sender.getId(), request);
+        List<MatchResultResponse> matchHistory = matchFacade.getMatchHistory(senderDto, request);
 
         // then
         assertThat(matchHistory).hasSize(size);
@@ -139,7 +134,7 @@ class MatchFacadeTest {
         PendingMatchCreateRequest request = new PendingMatchCreateRequest(receiver.getUsername());
 
         // when
-        matchFacade.createPendingMatch(sender.getId(), request);
+        matchFacade.createPendingMatch(senderDto, request);
 
         // then
         List<PendingMatchResponse> receivedPendingMatch = pendingMatchRepository.getReceivedPendingMatch(receiver.getId());
@@ -154,7 +149,7 @@ class MatchFacadeTest {
 
         // when & then
         UserException userException = assertThrows(UserException.class, () ->
-                matchFacade.createPendingMatch(sender.getId(), request));
+                matchFacade.createPendingMatch(senderDto, request));
         assertThat(userException.getErrorCode()).isEqualTo(UserErrorCode.USER_NOT_FOUND);
     }
 
@@ -165,7 +160,7 @@ class MatchFacadeTest {
         pendingMatchRepository.save(pendingMatch);
 
         // when
-        matchFacade.acceptMatch(receiver.getId(), pendingMatch.getId());
+        matchFacade.acceptMatch(receiverDto, pendingMatch.getId());
 
         // then
         PendingMatch updatedMatch = pendingMatchRepository.findById(pendingMatch.getId()).orElseThrow();
@@ -179,7 +174,7 @@ class MatchFacadeTest {
         pendingMatchRepository.save(pendingMatch);
 
         // when
-        matchFacade.rejectMatch(receiver.getId(), pendingMatch.getId());
+        matchFacade.rejectMatch(receiverDto, pendingMatch.getId());
 
         // then
         PendingMatch updatedMatch = pendingMatchRepository.findById(pendingMatch.getId()).orElseThrow();
@@ -191,7 +186,7 @@ class MatchFacadeTest {
     void acceptNonExistentMatch() {
         // when & then
         MatchException matchException = assertThrows(MatchException.class, () ->
-                matchFacade.acceptMatch(receiver.getId(), 999L));
+                matchFacade.acceptMatch(receiverDto, 999L));
         assertThat(matchException.getErrorCode()).isEqualTo(MatchErrorCode.MATCH_NOT_FOUND);
     }
 
@@ -202,7 +197,7 @@ class MatchFacadeTest {
         pendingMatchRepository.save(pendingMatch);
         // when & then
         MatchException matchException = assertThrows(MatchException.class, () ->
-                matchFacade.acceptMatch(sender.getId(), pendingMatch.getId()));
+                matchFacade.acceptMatch(senderDto, pendingMatch.getId()));
         assertThat(matchException.getErrorCode()).isEqualTo(MatchErrorCode.MATCH_NOT_RECEIVER);
     }
 
@@ -215,7 +210,7 @@ class MatchFacadeTest {
 
         // when & then
         MatchException matchException = assertThrows(MatchException.class, () ->
-                matchFacade.acceptMatch(receiver.getId(), pendingMatch.getId()));
+                matchFacade.acceptMatch(receiverDto, pendingMatch.getId()));
         assertThat(matchException.getErrorCode()).isEqualTo(MatchErrorCode.MATCH_NOT_PENDING);
     }
 } 

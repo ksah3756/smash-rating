@@ -1,5 +1,6 @@
 package com.smashrating.auth.jwt;
 
+import com.smashrating.auth.dto.UserDto;
 import com.smashrating.auth.dto.UserPrincipal;
 import com.smashrating.auth.enums.util.JwtUtils;
 import io.jsonwebtoken.Jwts;
@@ -18,32 +19,33 @@ import static com.smashrating.auth.enums.TokenExp.REFRESH_TOKEN_EXP;
 public class JwtProvider {
     private final JwtUtils jwtUtils;
 
-    private String generateToken(String username, Duration expiredAt, String role) {
+    private String generateToken(UserDto userDto, Duration expiredAt) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + expiredAt.toMillis());
-        return makeToken(now, expiry, username, role);
+        return makeToken(now, expiry, userDto);
     }
 
-    private String makeToken(Date now, Date expiry, String username, String role) {
+    private String makeToken(Date now, Date expiry, UserDto userdto) {
         return Jwts.builder()
                 .issuer(jwtUtils.getIssuer())
                 .issuedAt(now)
                 .expiration(expiry)
-                .subject(username)
-                .claim("username", username)
-                .claim("role", role)
+                .subject(userdto.username())
+                .claim("id", userdto.id())
+                .claim("username", userdto.username())
+                .claim("role", userdto.role())
                 .signWith(jwtUtils.getSignInKey())
                 .compact();
     }
 
     public String generateAccessToken(Authentication authentication) {
         UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
-        return generateToken(principal.getUsername(), ACCESS_TOKEN_EXP.getExp(), principal.getRole());
+        return generateToken(principal.getUserDto(), ACCESS_TOKEN_EXP.getExp());
     }
 
     public String generateRefreshToken(Authentication authentication) {
         UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
-        return generateToken(principal.getUsername(), REFRESH_TOKEN_EXP.getExp(), principal.getRole());
+        return generateToken(principal.getUserDto(), REFRESH_TOKEN_EXP.getExp());
     }
 
 

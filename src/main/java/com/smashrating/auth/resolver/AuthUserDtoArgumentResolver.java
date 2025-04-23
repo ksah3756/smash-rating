@@ -1,10 +1,9 @@
 package com.smashrating.auth.resolver;
 
+import com.smashrating.auth.dto.UserDto;
 import com.smashrating.auth.dto.UserPrincipal;
 import com.smashrating.common.exception.CommonErrorCode;
 import com.smashrating.common.exception.CustomException;
-import com.smashrating.user.domain.User;
-import com.smashrating.user.application.query.UserQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
@@ -15,16 +14,16 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 @RequiredArgsConstructor
-public class AuthUserIdArgumentResolver implements HandlerMethodArgumentResolver {
+public class AuthUserDtoArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterAnnotation(AuthUserId.class) != null
-                && Long.class.isAssignableFrom(parameter.getParameterType());
+        return parameter.getParameterAnnotation(AuthUserDto.class) != null
+                && UserDto.class.isAssignableFrom(parameter.getParameterType());
     }
 
     @Override
-    public Long resolveArgument(MethodParameter parameter,
+    public UserDto resolveArgument(MethodParameter parameter,
                                 ModelAndViewContainer mavContainer,
                                 NativeWebRequest webRequest,
                                 WebDataBinderFactory binderFactory) throws Exception
@@ -38,6 +37,11 @@ public class AuthUserIdArgumentResolver implements HandlerMethodArgumentResolver
         if (!(principal instanceof UserPrincipal userPrincipal)) {
             throw new CustomException(CommonErrorCode.UNAUTHORIZED);
         }
-        return userPrincipal.getId();
+        return UserDto.of(
+                userPrincipal.getRole(),
+                userPrincipal.getId(),
+                userPrincipal.getUsername(),
+                ""
+        );
     }
 }

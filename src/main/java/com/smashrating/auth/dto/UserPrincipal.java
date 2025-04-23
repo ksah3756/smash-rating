@@ -1,5 +1,6 @@
 package com.smashrating.auth.dto;
 
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
+@Getter
 public class UserPrincipal implements OAuth2User, UserDetails {
 
     private UserDto userDto;

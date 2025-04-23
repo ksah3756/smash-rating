@@ -1,7 +1,6 @@
 package com.smashrating.auth.config;
 
-import com.smashrating.auth.resolver.AuthUserIdArgumentResolver;
-import com.smashrating.user.application.query.UserQueryService;
+import com.smashrating.auth.resolver.AuthUserDtoArgumentResolver;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -14,7 +13,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new AuthUserIdArgumentResolver());
+        resolvers.add(new AuthUserDtoArgumentResolver());
     }
 
     @Override
