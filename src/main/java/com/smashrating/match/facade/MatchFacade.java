@@ -1,5 +1,6 @@
 package com.smashrating.match.facade;
 
+import com.smashrating.auth.dto.UserDto;
 import com.smashrating.match.application.PendingMatchValidateService;
 import com.smashrating.match.application.command.PendingMatchCommandService;
 import com.smashrating.match.domain.PendingMatch;
@@ -29,51 +30,51 @@ public class MatchFacade {
     private final UserQueryService userQueryService;
 
     @Transactional(readOnly = true)
-    public List<PendingMatchResponse> getReceivedMatches(Long userId) {
-        return pendingMatchQueryService.getReceivedPendingMatch(userId);
+    public List<PendingMatchResponse> getReceivedMatches(UserDto userDto) {
+        return pendingMatchQueryService.getReceivedPendingMatch(userDto.id());
     }
 
     @Transactional(readOnly = true)
-    public List<PendingMatchResponse> getSentMatches(Long userId) {
-        return pendingMatchQueryService.getSentPendingMatch(userId);
+    public List<PendingMatchResponse> getSentMatches(UserDto userDto) {
+        return pendingMatchQueryService.getSentPendingMatch(userDto.id());
     }
 
     @Transactional(readOnly = true)
-    public List<MatchResultResponse> getMatchHistory(Long userId, MatchResultRequest matchResultRequest) {
-        return matchResultQueryService.getMatchHistory(userId, matchResultRequest.lastMatchResultId(), matchResultRequest.size());
+    public List<MatchResultResponse> getMatchHistory(UserDto userDto, MatchResultRequest matchResultRequest) {
+        return matchResultQueryService.getMatchHistory(userDto.id(), matchResultRequest.lastMatchResultId(), matchResultRequest.size());
     }
 
     @Transactional
-    public void createPendingMatch(Long userId, PendingMatchCreateRequest matchRequest) {
+    public void createPendingMatch(UserDto userDto, PendingMatchCreateRequest matchRequest) {
         User opponent = userQueryService.getUserByUsername(matchRequest.opponentUsername());
-        if (userId.equals(opponent.getId())) {
+        if (userDto.equals(opponent.getId())) {
             throw new MatchException(MatchErrorCode.MATCH_ILLEGAL_REQUEST);
         }
         pendingMatchCommandService.createPendingMatch(
-                userId,
+                userDto.id(),
                 opponent.getId()
         );
     }
 
     @Transactional
-    public void acceptMatch(Long userId, Long matchId) {
+    public void acceptMatch(UserDto userDto, Long matchId) {
         PendingMatch match = pendingMatchQueryService.getPendingMatchById(matchId);
-        validatePendingMatchStatusAndReceiver(userId, match);
+        validatePendingMatchStatusAndReceiver(userDto, match);
 
         pendingMatchCommandService.acceptPendingMatch(match);
     }
 
     @Transactional
-    public void rejectMatch(Long userId, Long matchId) {
+    public void rejectMatch(UserDto userDto, Long matchId) {
         PendingMatch match = pendingMatchQueryService.getPendingMatchById(matchId);
-        validatePendingMatchStatusAndReceiver(userId, match);
+        validatePendingMatchStatusAndReceiver(userDto, match);
 
         pendingMatchCommandService.rejectPendingMatch(match);
     }
 
     // PendingMatch의 상태가 Pending인지, PendingMatch의 receiver가 요청한 유저가 맞는지 확인
-    private void validatePendingMatchStatusAndReceiver(Long userId, PendingMatch match) {
+    private void validatePendingMatchStatusAndReceiver(UserDto userDto, PendingMatch match) {
         pendingMatchValidateService.validatePendingStatus(match);
-        pendingMatchValidateService.validateReceiver(match, userId);
+        pendingMatchValidateService.validateReceiver(match, userDto.id());
     }
 }

@@ -1,5 +1,6 @@
 package com.smashrating.auth.jwt;
 
+import com.smashrating.auth.dto.UserDto;
 import com.smashrating.auth.dto.UserPrincipal;
 import com.smashrating.auth.enums.util.JwtUtils;
 import com.smashrating.auth.exception.AuthErrorCode;
@@ -46,12 +47,14 @@ public class JwtParser {
         String role = claims.get("role", String.class);
         Set<SimpleGrantedAuthority> authorities = getRoles(role);
 
+        UserDto userDto = UserDto.of(
+                role,
+                claims.get("id", Long.class),
+                claims.get("username", String.class),
+                ""
+        );
         return new UsernamePasswordAuthenticationToken(
-                new org.springframework.security.core.userdetails.User(
-                        claims.getSubject(),
-                        "",
-                        authorities
-                ), token, authorities
+                UserPrincipal.create(userDto), token, authorities
         );
     }
 
