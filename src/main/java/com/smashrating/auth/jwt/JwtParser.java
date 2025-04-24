@@ -32,7 +32,7 @@ public class JwtParser {
                     .getPayload();
         } catch(ExpiredJwtException e) {
             throw new AuthException(AuthErrorCode.EXPIRED_TOKEN);
-        } catch (RuntimeException e) {
+        } catch (JwtException e) {
             // Token이 유효하지 않은 경우, 예외를 던짐
             throw new AuthException(AuthErrorCode.INVALID_TOKEN);
         }
@@ -59,7 +59,7 @@ public class JwtParser {
     }
 
     private Set<SimpleGrantedAuthority> getRoles(String role) {
-        if (role.equals("ADMIN")) {
+        if ("ADMIN".equals(role)) {
             return Collections.singleton(new SimpleGrantedAuthority("ROLE_ADMIN"));
         }
         return Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));

@@ -55,12 +55,6 @@ public enum Tier {
             return UNRANKED;
         }
 
-        // 점수에 따른 티어 결정
-        return Arrays.stream(Tier.values())
-                .filter(tier -> tier != UNRANKED &&
-                        score >= tier.getMinScore() &&
-                        score <= tier.getMaxScore())
-                .findFirst()
-                .orElse(UNRANKED);
+        return fromScore((int) score);
     }
 }

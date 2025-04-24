@@ -37,7 +37,7 @@ public class MatchController {
     @GetMapping("/me/history")
     public ResponseEntity<List<MatchResultResponse>> getMatchHistory(
             @AuthUserDto UserDto userDto,
-            @RequestBody @Valid MatchResultRequest matchResultRequest) {
+            @ModelAttribute @Valid MatchResultRequest matchResultRequest) {
         return ResponseEntity.ok(matchFacade.getMatchHistory(userDto, matchResultRequest));
     }
 
