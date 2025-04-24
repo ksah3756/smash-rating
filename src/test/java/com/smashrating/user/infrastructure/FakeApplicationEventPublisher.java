@@ -9,8 +9,6 @@ public class FakeApplicationEventPublisher implements ApplicationEventPublisher 
     private final List<Object> publishedEvents = new ArrayList<>();
     @Override
     public void publishEvent(Object event) {
-        // No-op implementation for testing purposes
-        System.out.println("Event published: " + event.toString());
         publishedEvents.add(event);
     }
 

@@ -19,7 +19,7 @@ import static com.smashrating.auth.enums.util.CookieUtils.createCookie;
 @RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    @Value("$app.frontend.base-url")
+    @Value("${app.frontend.base-url}")
     private String frontendBaseUrl;
 
     private final JwtProvider jwtProvider;

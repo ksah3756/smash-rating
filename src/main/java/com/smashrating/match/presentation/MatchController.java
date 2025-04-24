@@ -52,13 +52,13 @@ public class MatchController {
     @PostMapping("/{matchId}/accept")
     public ResponseEntity<Void> acceptMatch(@AuthUserDto UserDto userDto, @PathVariable Long matchId) {
         matchFacade.acceptMatch(userDto, matchId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{matchId}/reject")
     public ResponseEntity<Void> rejectMatch(@AuthUserDto UserDto userDto, @PathVariable Long matchId) {
         matchFacade.rejectMatch(userDto, matchId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     // TODO: 매치 결과 기입 API

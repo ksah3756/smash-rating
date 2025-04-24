@@ -14,6 +14,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -24,22 +26,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserControllerTest {
 
     @MockitoBean
-    private UserFacade userService;
+    private UserFacade userFacade;
 
     @Autowired
     private MockMvc mockMvc;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     @DisplayName("요청 바디를 제대로 기입할 경우 회원가입을 성공한다.")
     void register_success() throws Exception {
         UserCreateRequest request = UserCreateRequestTestFactory.createDefaultRequest();
 
-        String req = new ObjectMapper().writeValueAsString(request);
+        String req = objectMapper.writeValueAsString(request);
         mockMvc.perform(post("/user/register")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(req))
                 .andExpect(status().isCreated());
+
+        verify(userFacade).createUser(argThat(arg ->
+                arg.username().equals(request.username()) &&
+                arg.email().equals(request.email())
+        ));
     }
 
     @Test
@@ -50,10 +59,10 @@ class UserControllerTest {
                 .password("testPassword")
                 .realName("testRealName")
                 .nickname("testNickname")
-                .email("testEmail")
+                .email("testEmail@example.com")
                 .build();
 
-        String req = new ObjectMapper().writeValueAsString(request);
+        String req = objectMapper.writeValueAsString(request);
         mockMvc.perform(post("/user/register")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
