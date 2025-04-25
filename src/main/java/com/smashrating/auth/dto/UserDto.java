@@ -1,12 +1,14 @@
 package com.smashrating.auth.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public record UserDto(
         String role,
-        String name,
+        Long id,
         String username,
-        String password
+        @JsonIgnore String password
 ) {
-    public static UserDto of(String role, String name, String username, String password) {
-        return new UserDto(role, name, username, password);
+    public static UserDto of(String role, Long id, String username, String password) {
+        return new UserDto(role, id, username, password);
     }
 }

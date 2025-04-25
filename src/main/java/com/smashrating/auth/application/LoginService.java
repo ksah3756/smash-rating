@@ -1,7 +1,7 @@
 package com.smashrating.auth.application;
 
 import com.smashrating.auth.dto.UserDto;
-import com.smashrating.auth.dto.UserPrinciple;
+import com.smashrating.auth.dto.UserPrincipal;
 import com.smashrating.user.domain.User;
 import com.smashrating.user.infrastructure.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +21,10 @@ public class LoginService implements UserDetailsService {
 
         UserDto userDto = UserDto.of(
                 user.getRole().toString(),
-                user.getName(),
+                user.getId(),
                 user.getUsername(),
                 user.getPassword()
         );
-        return UserPrinciple.create(userDto);
+        return UserPrincipal.create(userDto);
     }
 }

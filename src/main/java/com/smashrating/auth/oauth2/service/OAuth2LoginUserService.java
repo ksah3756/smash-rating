@@ -7,12 +7,9 @@ import com.smashrating.user.infrastructure.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -44,45 +41,48 @@ public class OAuth2LoginUserService extends DefaultOAuth2UserService {
         String username = oAuth2UserInfo.getProvider() + "_" + oAuth2UserInfo.getProviderId();
 
         Optional<User> optionalMember = userRepository.findByUsername(username);
+        User user;
         if(optionalMember.isEmpty()) {
-            registerNewMember(username, oAuth2UserInfo);
+            user = registerNewUser(username, oAuth2UserInfo);
         } else {
-            updateExistingMember(optionalMember, username, oAuth2UserInfo);
+            user = updateExistingUser(optionalMember, username, oAuth2UserInfo);
         }
 
         UserDto userDto = UserDto.of(
                 Role.ROLE_USER.toString(),
-                oAuth2UserInfo.getName(),
+                user.getId(),
                 username,
                 ""
         );
 
-        return UserPrinciple.create(userDto);
+        return com.smashrating.auth.dto.UserPrincipal.create(userDto);
     }
 
-    private void updateExistingMember(Optional<User> optionalMember, String username, OAuth2UserInfo oAuth2UserInfo) {
+    private User updateExistingUser(Optional<User> optionalMember, String username, OAuth2UserInfo oAuth2UserInfo) {
         User user = optionalMember.get();
         User updateUser = User.create(
                 username,
                 user.getPassword(),
                 oAuth2UserInfo.getName(),
+                user.getNickname(),
                 oAuth2UserInfo.getEmail(),
                 user.getRole()
         );
         user.update(updateUser);
 
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 
-    private void registerNewMember(String username, OAuth2UserInfo oAuth2UserInfo) {
+    private User registerNewUser(String username, OAuth2UserInfo oAuth2UserInfo) {
         User user = User.create(
                 username,
                 "",
                 oAuth2UserInfo.getName(),
+                "",
                 oAuth2UserInfo.getEmail(),
                 Role.ROLE_USER
         );
 
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 }

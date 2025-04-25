@@ -1,6 +1,6 @@
 package com.smashrating.user.presentation;
 
-import com.smashrating.user.application.UserService;
+import com.smashrating.user.facade.UserFacade;
 import com.smashrating.user.dto.UserCreateRequest;
 import com.smashrating.user.dto.UserCreateResponse;
 import jakarta.validation.Valid;
@@ -17,7 +17,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserService userService;
+    private final UserFacade userFacade;
 
     @GetMapping("/my")
     public String myAPI() {
@@ -28,6 +28,6 @@ public class UserController {
     public ResponseEntity<UserCreateResponse> register(
             @RequestBody @Valid UserCreateRequest request
     ) {
-        return ResponseEntity.status(CREATED).body(userService.createMember(request));
+        return ResponseEntity.status(CREATED).body(userFacade.createUser(request));
     }
 }

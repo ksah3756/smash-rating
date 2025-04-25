@@ -39,6 +39,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ErrorResponse> handleValidationException(ConstraintViolationException e) {
         log.warn("ConstraintViolationException 예외 발생, msg:{}", e.getMessage());
         ErrorCode errorCode = CommonErrorCode.VALIDATION_ERROR;
+
         return ResponseEntity.status(HttpStatus.valueOf(errorCode.getStatus().value()))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(createErrorResponse(errorCode, e.getMessage()));
