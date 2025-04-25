@@ -43,6 +43,8 @@ jwt:
 server:
   port: ${PORT:8080}
 
+fcm:
+  certification: fcm-certification.json
 
 
 ---
