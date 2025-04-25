@@ -1,7 +1,8 @@
 package com.smashrating.auth.jwt;
 
-import com.smashrating.auth.dto.MemberPrinciple;
-import com.smashrating.auth.util.JwtUtils;
+import com.smashrating.auth.dto.UserDto;
+import com.smashrating.auth.dto.UserPrincipal;
+import com.smashrating.auth.enums.util.JwtUtils;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -10,40 +11,41 @@ import org.springframework.stereotype.Component;
 import java.time.Duration;
 import java.util.Date;
 
-import static com.smashrating.auth.jwt.TokenExp.ACCESS_TOKEN_EXP;
-import static com.smashrating.auth.jwt.TokenExp.REFRESH_TOKEN_EXP;
+import static com.smashrating.auth.enums.TokenExp.ACCESS_TOKEN_EXP;
+import static com.smashrating.auth.enums.TokenExp.REFRESH_TOKEN_EXP;
 
 @Component
 @RequiredArgsConstructor
 public class JwtProvider {
     private final JwtUtils jwtUtils;
 
-    private String generateToken(String username, Duration expiredAt, String role) {
+    private String generateToken(UserDto userDto, Duration expiredAt) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + expiredAt.toMillis());
-        return makeToken(now, expiry, username, role);
+        return makeToken(now, expiry, userDto);
     }
 
-    private String makeToken(Date now, Date expiry, String username, String role) {
+    private String makeToken(Date now, Date expiry, UserDto userdto) {
         return Jwts.builder()
                 .issuer(jwtUtils.getIssuer())
                 .issuedAt(now)
                 .expiration(expiry)
-                .subject(username)
-                .claim("username", username)
-                .claim("role", role)
+                .subject(userdto.username())
+                .claim("id", userdto.id())
+                .claim("username", userdto.username())
+                .claim("role", userdto.role())
                 .signWith(jwtUtils.getSignInKey())
                 .compact();
     }
 
     public String generateAccessToken(Authentication authentication) {
-        MemberPrinciple principal = (MemberPrinciple) authentication.getPrincipal();
-        return generateToken(principal.getUsername(), ACCESS_TOKEN_EXP.getExp(), principal.getRole().toString());
+        UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+        return generateToken(principal.getUserDto(), ACCESS_TOKEN_EXP.getExp());
     }
 
     public String generateRefreshToken(Authentication authentication) {
-        MemberPrinciple principal = (MemberPrinciple) authentication.getPrincipal();
-        return generateToken(principal.getUsername(), REFRESH_TOKEN_EXP.getExp(), principal.getRole().toString());
+        UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+        return generateToken(principal.getUserDto(), REFRESH_TOKEN_EXP.getExp());
     }
 
 

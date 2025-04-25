@@ -1,7 +1,7 @@
 package com.smashrating.auth.application;
 
-import com.smashrating.auth.dto.MemberDto;
-import com.smashrating.auth.dto.MemberPrinciple;
+import com.smashrating.auth.dto.UserDto;
+import com.smashrating.auth.dto.UserPrincipal;
 import com.smashrating.user.domain.User;
 import com.smashrating.user.infrastructure.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,14 +17,14 @@ public class LoginService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Member not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        MemberDto memberDto = MemberDto.of(
+        UserDto userDto = UserDto.of(
                 user.getRole().toString(),
-                user.getName(),
+                user.getId(),
                 user.getUsername(),
                 user.getPassword()
         );
-        return MemberPrinciple.create(memberDto);
+        return UserPrincipal.create(userDto);
     }
 }

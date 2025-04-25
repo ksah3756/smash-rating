@@ -1,6 +1,7 @@
 package com.smashrating.auth.config;
 
 import com.smashrating.auth.application.LoginService;
+import com.smashrating.auth.filter.JwtExceptionHandlingFilter;
 import com.smashrating.auth.filter.LoginFilter;
 import com.smashrating.auth.handler.LoginSuccessHandler;
 import com.smashrating.auth.jwt.JwtParser;
@@ -8,10 +9,12 @@ import com.smashrating.auth.jwt.JwtProvider;
 import com.smashrating.auth.filter.JwtAuthenticationFilter;
 import com.smashrating.auth.handler.OAuth2AuthenticationSuccessHandler;
 import com.smashrating.auth.oauth2.service.OAuth2LoginUserService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -32,6 +35,7 @@ import java.util.Collections;
 @EnableWebSecurity
 @RequiredArgsConstructor
 @Slf4j
+@Profile({"!test"})
 public class SecurityConfig {
     private final JwtParser jwtParser;
     private final JwtProvider jwtProvider;
@@ -47,8 +51,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable) // UsernamePasswordAuthenticationFilter disable
-                .oauth2Login(oauth2 -> oauth2.userInfoEndpoint(
-                        userInfo -> userInfo.userService(oAuth2LoginUserService))
+                .oauth2Login(oauth2 ->
+                        oauth2.userInfoEndpoint(userInfo -> userInfo.userService(oAuth2LoginUserService))
                         .successHandler(oAuth2AuthenticationSuccessHandler)
                 )
                 .logout(AbstractHttpConfigurer::disable)
@@ -56,6 +60,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtExceptionHandlingFilter(), JwtAuthenticationFilter.class)
                 .addFilterBefore(loginFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(SWAGGER_PATTERNS).permitAll()
@@ -63,6 +68,16 @@ public class SecurityConfig {
                         .requestMatchers(PERMIT_ALL_PATTERNS).permitAll()
                         .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setContentType("application/json");
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "{\"code\":\"UNAUTHORIZED\",\"message\":\"인증이 필요합니다.\"}");
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setContentType("application/json");
+                            response.sendError(HttpServletResponse.SC_FORBIDDEN, "{\"code\":\"FORBIDDEN\",\"message\":\"접근 권한이 없습니다.\"}");
+                        })
                 );
 
         return http.build();
@@ -90,7 +105,8 @@ public class SecurityConfig {
     };
 
     private static final String[] PUBLIC_ENDPOINTS = {
-        "/member/register",
+        "/user/register",
+        "/user/login",
     };
 
     CorsConfigurationSource corsConfigurationSource() {
@@ -103,15 +119,18 @@ public class SecurityConfig {
                     "http://localhost:8080"
             ));
             config.setAllowCredentials(true);
-            // 응답 헤더로 JWT, Set-Cookie 등을 읽기 위해
             config.setExposedHeaders(Arrays.asList("Authorization", "Set-Cookie"));
-            config.setMaxAge(3600L); // preflight 1시간 캐시
+            config.setMaxAge(3600L);
             return config;
         };
     }
 
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
         return new JwtAuthenticationFilter(jwtParser);
+    }
+
+    public JwtExceptionHandlingFilter jwtExceptionHandlingFilter() {
+        return new JwtExceptionHandlingFilter();
     }
 
     @Bean
@@ -130,7 +149,7 @@ public class SecurityConfig {
 
     private LoginFilter loginFilter() throws Exception {
         LoginFilter loginFilter = new LoginFilter();
-        loginFilter.setFilterProcessesUrl("/member/login");
+        loginFilter.setFilterProcessesUrl("/user/login");
         loginFilter.setAuthenticationSuccessHandler(new LoginSuccessHandler(jwtProvider));
         loginFilter.setAuthenticationManager(authenticationManager());
         return loginFilter;

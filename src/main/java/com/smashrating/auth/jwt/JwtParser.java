@@ -1,7 +1,12 @@
 package com.smashrating.auth.jwt;
 
-import com.smashrating.auth.util.JwtUtils;
+import com.smashrating.auth.dto.UserDto;
+import com.smashrating.auth.dto.UserPrincipal;
+import com.smashrating.auth.enums.util.JwtUtils;
+import com.smashrating.auth.exception.AuthErrorCode;
+import com.smashrating.auth.exception.AuthException;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
@@ -18,55 +23,45 @@ import java.util.Set;
 public class JwtParser {
     private final JwtUtils jwtUtils;
 
-    private Claims getClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(jwtUtils.getSignInKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-    }
-
-    public boolean validateToken(String token) {
+    private Claims parseClaims(String token) {
         try {
-            getClaims(token);
-            return true;
+            return Jwts.parser()
+                    .verifyWith(jwtUtils.getSignInKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch(ExpiredJwtException e) {
+            throw new AuthException(AuthErrorCode.EXPIRED_TOKEN);
         } catch (JwtException e) {
-            // Log the exception or handle it as needed
-            return false;
+            // Token이 유효하지 않은 경우, 예외를 던짐
+            throw new AuthException(AuthErrorCode.INVALID_TOKEN);
         }
     }
 
+    public void validateToken(String token) {
+        parseClaims(token);
+    }
+
     public Authentication getAuthentication(String token) {
-        Claims claims = getClaims(token);
+        Claims claims = parseClaims(token);
         String role = claims.get("role", String.class);
         Set<SimpleGrantedAuthority> authorities = getRoles(role);
 
+        UserDto userDto = UserDto.of(
+                role,
+                claims.get("id", Long.class),
+                claims.get("username", String.class),
+                ""
+        );
         return new UsernamePasswordAuthenticationToken(
-                new org.springframework.security.core.userdetails.User(
-                        claims.getSubject(),
-                        "",
-                        authorities
-                ), token, authorities
+                UserPrincipal.create(userDto), token, authorities
         );
     }
 
     private Set<SimpleGrantedAuthority> getRoles(String role) {
-        if (role.equals("HEADQUARTER")) {
-            return Collections.singleton(new SimpleGrantedAuthority("ROLE_HEADQUARTER"));
-        }
-        if (role.equals("STORE")) {
-            return Collections.singleton(new SimpleGrantedAuthority("ROLE_STORE"));
+        if ("ADMIN".equals(role)) {
+            return Collections.singleton(new SimpleGrantedAuthority("ROLE_ADMIN"));
         }
         return Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
-    }
-
-    public String getUsername(String token) {
-        Claims claims = getClaims(token);
-        return claims.get("username", String.class);
-    }
-
-    public String getStoreRole(String token) {
-        Claims claims = getClaims(token);
-        return claims.get("role", String.class);
     }
 }

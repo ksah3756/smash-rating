@@ -1,5 +1,6 @@
 package com.smashrating.auth.filter;
 
+import com.smashrating.auth.dto.UserPrincipal;
 import com.smashrating.auth.jwt.JwtParser;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -16,8 +17,6 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtParser jwtParser;
-    private final static String HEADER_AUTHORIZATION = "Authorization";
-    private final static String TOKEN_PREFIX = "Bearer ";
 
     @Override
     protected void doFilterInternal(
@@ -32,12 +31,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         for(Cookie cookie : cookies) {
-            if (cookie.getName().equals(HEADER_AUTHORIZATION)) {
+            if (cookie.getName().equals("accessToken")) {
                 String token = cookie.getValue();
-                if (jwtParser.validateToken(token)) {
-                    Authentication authentication = jwtParser.getAuthentication(token);
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                }
+                jwtParser.validateToken(token);
+                Authentication authentication = jwtParser.getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
 
@@ -46,6 +44,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        return request.getRequestURI().equals("/member/register");
+        return request.getRequestURI().equals("/user/register");
     }
 }
