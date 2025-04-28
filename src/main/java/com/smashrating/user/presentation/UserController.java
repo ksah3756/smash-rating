@@ -1,5 +1,8 @@
 package com.smashrating.user.presentation;
 
+import com.smashrating.auth.dto.UserDto;
+import com.smashrating.auth.resolver.AuthUserDto;
+import com.smashrating.user.dto.UserInfoResponse;
 import com.smashrating.user.facade.UserFacade;
 import com.smashrating.user.dto.UserCreateRequest;
 import com.smashrating.user.dto.UserCreateResponse;
@@ -20,8 +23,8 @@ public class UserController {
     private final UserFacade userFacade;
 
     @GetMapping("/my")
-    public String myAPI() {
-        return "Hello, this is my API!";
+    public ResponseEntity<UserInfoResponse> getMyInfo(@AuthUserDto UserDto userDto) {
+        return ResponseEntity.ok(userFacade.getUserByUsername(userDto.username()));
     }
 
     @PostMapping("/register")

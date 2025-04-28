@@ -10,11 +10,14 @@ import com.smashrating.match.dto.PendingMatchCreateRequest;
 import com.smashrating.match.dto.PendingMatchResponse;
 import com.smashrating.match.application.query.MatchResultQueryService;
 import com.smashrating.match.application.query.PendingMatchQueryService;
+import com.smashrating.match.event.PendingMatchRequestEvent;
 import com.smashrating.match.exception.MatchErrorCode;
 import com.smashrating.match.exception.MatchException;
 import com.smashrating.user.application.query.UserQueryService;
 import com.smashrating.user.domain.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,12 +25,14 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MatchFacade {
     private final PendingMatchQueryService pendingMatchQueryService;
     private final PendingMatchCommandService pendingMatchCommandService;
     private final PendingMatchValidateService pendingMatchValidateService;
     private final MatchResultQueryService matchResultQueryService;
     private final UserQueryService userQueryService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional(readOnly = true)
     public List<PendingMatchResponse> getReceivedMatches(UserDto userDto) {
@@ -46,14 +51,18 @@ public class MatchFacade {
 
     @Transactional
     public void createPendingMatch(UserDto userDto, PendingMatchCreateRequest matchRequest) {
-        User opponent = userQueryService.getUserByUsername(matchRequest.opponentUsername());
-        if (userDto.equals(opponent.getId())) {
+        User sender = userQueryService.getUserByUsername(userDto.username());
+        User receiver = userQueryService.getUserByUsername(matchRequest.receiverUsername());
+        if (userDto.id().equals(receiver.getId())) {
+            log.info("로그인 유저 id={}, username={}", userDto.id(), userDto.username());
+            log.info("수신자 id={}, username={}", receiver.getId(), receiver.getUsername());
             throw new MatchException(MatchErrorCode.MATCH_ILLEGAL_REQUEST);
         }
         pendingMatchCommandService.createPendingMatch(
                 userDto.id(),
-                opponent.getId()
+                receiver.getId()
         );
+        eventPublisher.publishEvent(PendingMatchRequestEvent.of(receiver.getUsername(), sender.getNickname(), sender.getRealName()));
     }
 
     @Transactional

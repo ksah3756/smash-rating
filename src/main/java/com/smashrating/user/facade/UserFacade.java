@@ -1,8 +1,10 @@
 package com.smashrating.user.facade;
 
+import com.smashrating.user.application.query.UserQueryService;
 import com.smashrating.user.domain.User;
 import com.smashrating.user.dto.UserCreateRequest;
 import com.smashrating.user.dto.UserCreateResponse;
+import com.smashrating.user.dto.UserInfoResponse;
 import com.smashrating.user.event.UserCreatedEvent;
 import com.smashrating.user.exception.UserErrorCode;
 import com.smashrating.user.application.UserValidatorService;
@@ -16,7 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class UserFacade {
-    private final UserCommandService userWriter;
+    private final UserCommandService userCommandService;
+    private final UserQueryService userQueryService;
     private final UserValidatorService userValidator;
     private final ApplicationEventPublisher eventPublisher;
 
@@ -24,7 +27,7 @@ public class UserFacade {
     public UserCreateResponse createUser(UserCreateRequest request) {
         checkUserInfoUniqueness(request);
 
-        User savedUser = userWriter.createUser(
+        User savedUser = userCommandService.createUser(
                 request.username(),
                 request.password(),
                 request.realName(),
@@ -34,6 +37,12 @@ public class UserFacade {
 
         eventPublisher.publishEvent(UserCreatedEvent.of(savedUser.getUsername()));
         return UserCreateResponse.of(savedUser.getId());
+    }
+
+    @Transactional(readOnly = true)
+    public UserInfoResponse getUserByUsername(String username) {
+        User user = userQueryService.getUserByUsername(username);
+        return UserInfoResponse.fromEntity(user);
     }
 
     private void checkUserInfoUniqueness(UserCreateRequest request) {

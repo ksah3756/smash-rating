@@ -9,6 +9,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class PendingMatchValidateService {
 
+    public void checkIfSenderReceiverSame(Long senderId, Long receiverId) {
+        if (senderId.equals(receiverId)) {
+            throw new MatchException(MatchErrorCode.MATCH_ILLEGAL_REQUEST);
+        }
+    }
+
     public void validateReceiver(PendingMatch match, Long userId) {
         if (!match.getReceiveUserId().equals(userId)) {
             throw new MatchException(MatchErrorCode.MATCH_NOT_RECEIVER);

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/notification")
+@RequestMapping("/notification")
 @RequiredArgsConstructor
 public class NotificationController {
 
@@ -21,10 +21,8 @@ public class NotificationController {
 
     @PostMapping("/fcm/token")
     public ResponseEntity<Void> saveToken(@AuthUserDto UserDto userDto, @RequestBody FcmTokenRegisterRequest request) {
-        notificationFacade.saveToken(NotificationSenderType.FCM, userDto.id(), request.token());
+        notificationFacade.saveToken(NotificationSenderType.FCM, userDto.username(), request.token());
         return ResponseEntity.noContent().build();
     }
-
-
 
 }

@@ -1,8 +1,8 @@
 spring:
-  profiles:
-    active: oauth2
   config:
-    import: optional:file:.env[.properties]
+    import:
+      - optional:file:.env[.properties]
+      - "application-oauth2.yml"
   application:
     name: smash_rating
   datasource:
@@ -25,6 +25,8 @@ spring:
     show-sql: true
     open-in-view: false
     database-platform: org.hibernate.spatial.dialect.MySQL8SpatialDialect
+  jackson:
+    property-naming-strategy: SNAKE_CASE
 
   data:
     redis:
@@ -46,7 +48,9 @@ server:
 fcm:
   certification: fcm-certification.json
 
-
+app:
+  frontend:
+    base-url: ${FRONTEND_URL:http://localhost:3000}
 ---
 
 spring:
@@ -78,3 +82,7 @@ spring:
 jwt:
   issuer: test_issuer
   secret: test_secret
+
+app:
+  frontend:
+    base-url: ${FRONTEND_URL:http://localhost:3000}

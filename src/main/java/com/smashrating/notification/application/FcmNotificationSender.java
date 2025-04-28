@@ -24,7 +24,7 @@ public class FcmNotificationSender implements NotificationSender {
 
     @Override
     public void send(NotificationRequest request) {
-        String token = (String) redisRepository.get(RedisKeyPrefix.FCM_TOKEN + request.userId());
+        String token = (String) redisRepository.get(RedisKeyPrefix.FCM_TOKEN + request.username());
         Message message = Message.builder()
                 .setToken(token)
                 .setNotification(Notification.builder()
@@ -44,7 +44,7 @@ public class FcmNotificationSender implements NotificationSender {
     }
 
     @Override
-    public void saveToken(Long userId, String token) {
-        redisRepository.save(RedisKeyPrefix.FCM_TOKEN + userId, token);
+    public void saveToken(String username, String token) {
+        redisRepository.save(RedisKeyPrefix.FCM_TOKEN + username, token);
     }
 }

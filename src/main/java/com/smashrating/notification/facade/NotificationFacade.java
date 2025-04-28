@@ -22,11 +22,11 @@ public class NotificationFacade {
         sender.send(request);
     }
 
-    public void saveToken(NotificationSenderType type, Long userId, String token) {
+    public void saveToken(NotificationSenderType type, String username, String token) {
         NotificationSender sender = senderMap.get(type.getSenderName());
         if (sender == null) {
             throw new IllegalArgumentException("No notification sender found for type: " + type.getSenderName());
         }
-        sender.saveToken(userId, token);
+        sender.saveToken(username, token);
     }
 }
