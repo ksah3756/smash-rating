@@ -45,6 +45,7 @@ class JwtParserTest {
         // 유효한 토큰 생성: subject, username, role 값을 포함
         validUserToken = Jwts.builder()
                 .subject("testUser")
+                .claim("id", 1L)
                 .claim("username", "testUser")
                 .claim("role", "USER")
                 .signWith(key)
@@ -52,6 +53,7 @@ class JwtParserTest {
 
         validAdminToken = Jwts.builder()
                 .subject("adminUser")
+                .claim("id", 2L)
                 .claim("username", "adminUser")
                 .claim("role", "ADMIN")
                 .signWith(key)

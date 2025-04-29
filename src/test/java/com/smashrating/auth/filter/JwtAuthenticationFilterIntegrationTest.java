@@ -3,6 +3,8 @@ package com.smashrating.auth.filter;
 import com.smashrating.auth.dto.UserDto;
 import com.smashrating.auth.dto.UserPrincipal;
 import com.smashrating.auth.jwt.JwtProvider;
+import com.smashrating.common.annotation.IntegrationTest;
+import com.smashrating.config.TestContainerConfig;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,21 +13,27 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
+@ActiveProfiles("local")
 @SpringBootTest
 @AutoConfigureMockMvc
+@Testcontainers
+@Import(TestContainerConfig.class)
 class JwtAuthenticationFilterIntegrationTest {
 
     @TestConfiguration
