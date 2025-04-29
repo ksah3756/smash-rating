@@ -20,7 +20,7 @@ public class TestContainerConfig {
                 .withReuse(true);
         mysqlContainer.start();
 
-        redisContainer = new GenericContainer<>("redis:latest")
+        redisContainer = new GenericContainer<>("redis:7.4-alpine")
                 .withExposedPorts(REDIS_PORT)
                 .withReuse(true);
         redisContainer.start();
