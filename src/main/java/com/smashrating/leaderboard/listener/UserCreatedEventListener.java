@@ -1,8 +1,6 @@
 package com.smashrating.leaderboard.listener;
 
 import com.smashrating.leaderboard.application.LeaderboardRepository;
-import com.smashrating.notification.NotificationSender;
-import com.smashrating.notification.dto.NotificationRequest;
 import com.smashrating.user.event.UserCreatedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

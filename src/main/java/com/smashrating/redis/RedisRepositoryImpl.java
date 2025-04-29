@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.concurrent.TimeUnit;
+
 @Repository
 @RequiredArgsConstructor
 public class RedisRepositoryImpl implements RedisRepository {
@@ -12,6 +14,11 @@ public class RedisRepositoryImpl implements RedisRepository {
     @Override
     public void save(String key, Object value) {
         redisTemplate.opsForValue().set(key, value);
+    }
+
+    @Override
+    public void saveWithExpiration(String key, Object value, long expiration, TimeUnit timeUnit) {
+        redisTemplate.opsForValue().set(key, value, expiration, timeUnit);
     }
 
     @Override
@@ -28,4 +35,6 @@ public class RedisRepositoryImpl implements RedisRepository {
     public boolean exists(String key) {
         return Boolean.TRUE.equals(redisTemplate.hasKey(key));
     }
+
+
 }

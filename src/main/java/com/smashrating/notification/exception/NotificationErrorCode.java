@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 public enum NotificationErrorCode implements ErrorCode {
 
     SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to send notification"),
+    TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "FCM token not found"),
     ;
 
     private final HttpStatus status;

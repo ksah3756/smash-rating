@@ -33,6 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         for(Cookie cookie : cookies) {
             if (cookie.getName().equals("accessToken")) {
                 String token = cookie.getValue();
+                // 토큰 검증 실패 시 AuthException이 발생하며, JwtExceptionHandlingFilter에서 처리
                 jwtParser.validateToken(token);
                 Authentication authentication = jwtParser.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(authentication);

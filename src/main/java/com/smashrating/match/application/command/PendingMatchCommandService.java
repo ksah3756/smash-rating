@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class PendingMatchCommandService {
 
     private final PendingMatchRepository pendingMatchRepository;
-    private final PendingMatchQueryService pendingMatchQueryService;
 
     public void createPendingMatch(Long senderId, Long receiverId) {
         PendingMatch pendingMatch = PendingMatch.create(

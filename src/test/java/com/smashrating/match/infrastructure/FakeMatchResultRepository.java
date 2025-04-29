@@ -27,7 +27,8 @@ public class FakeMatchResultRepository implements MatchResultRepository {
     @Override
     public List<MatchResultResponse> getMatchHistory(Long userId, Long lastMatchResultId, int size) {
         return matchResults.stream()
-                .filter(matchResult -> matchResult.getId() < lastMatchResultId) // 가장 최근 매치 결과부터 가져오기
+                .filter(matchResult ->
+                        lastMatchResultId == null | matchResult.getId() < lastMatchResultId) // 가장 최근 매치 결과부터 가져오기
                 .filter(matchResult -> matchResult.getUserInfo().getUserId().equals(userId))
                 .filter(matchResult -> matchResult.getStatus().equals(MatchResultStatus.COMPLETED))
                 .sorted(Comparator.comparing(MatchResult::getId).reversed())

@@ -38,7 +38,7 @@ public class MatchResultRepositoryCustomImpl implements MatchResultRepositoryCus
                 .join(opponent).on(opponent.id.eq(matchResult.opponentInfo.userId))
                 .where(matchResult.userInfo.userId.eq(userId)
                         .and(cursorId(lastMatchResultId)))
-                .orderBy(matchResult.id.desc())
+                .orderBy(matchResult.createdAt.desc())
                 .limit(size)
                 .fetch();
     }

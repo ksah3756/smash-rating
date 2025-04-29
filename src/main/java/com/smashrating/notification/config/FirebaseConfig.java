@@ -4,6 +4,8 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.smashrating.common.exception.CommonErrorCode;
+import com.smashrating.common.exception.CustomException;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +26,7 @@ public class FirebaseConfig {
     private FirebaseApp firebaseApp;
 
     @PostConstruct
-    public void initializeFcm() throws IOException {
+    public void initializeFcm() {
         ClassPathResource resource = new ClassPathResource(googleApplicationCredentials);
 
         try (InputStream is = resource.getInputStream()) {
@@ -38,6 +40,9 @@ public class FirebaseConfig {
             } else {
                 firebaseApp = FirebaseApp.getInstance();
             }
+        } catch (IOException e) {
+            log.error("Error initializing FirebaseApp: {}", e.getMessage());
+            throw new IllegalStateException("Failed to initialize FirebaseApp", e);
         }
     }
 

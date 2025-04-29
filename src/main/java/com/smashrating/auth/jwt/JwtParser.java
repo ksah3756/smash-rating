@@ -32,7 +32,7 @@ public class JwtParser {
                     .getPayload();
         } catch(ExpiredJwtException e) {
             throw new AuthException(AuthErrorCode.EXPIRED_TOKEN);
-        } catch (JwtException e) {
+        } catch (JwtException | IllegalArgumentException e) {
             // Token이 유효하지 않은 경우, 예외를 던짐
             throw new AuthException(AuthErrorCode.INVALID_TOKEN);
         }
@@ -47,9 +47,10 @@ public class JwtParser {
         String role = claims.get("role", String.class);
         Set<SimpleGrantedAuthority> authorities = getRoles(role);
 
+        Long userId = ((Number) claims.get("id")).longValue();
         UserDto userDto = UserDto.of(
                 role,
-                claims.get("id", Long.class),
+                userId,
                 claims.get("username", String.class),
                 ""
         );

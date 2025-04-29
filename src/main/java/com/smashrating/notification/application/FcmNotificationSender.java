@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.TimeUnit;
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -25,6 +27,10 @@ public class FcmNotificationSender implements NotificationSender {
     @Override
     public void send(NotificationRequest request) {
         String token = (String) redisRepository.get(RedisKeyPrefix.FCM_TOKEN + request.username());
+        if (token == null) {
+            log.warn("FCM token not found for user: {}", request.username());
+            throw new NotificationException(NotificationErrorCode.TOKEN_NOT_FOUND, "FCM token not found for user: " + request.username());
+        }
         Message message = Message.builder()
                 .setToken(token)
                 .setNotification(Notification.builder()
@@ -45,6 +51,7 @@ public class FcmNotificationSender implements NotificationSender {
 
     @Override
     public void saveToken(String username, String token) {
-        redisRepository.save(RedisKeyPrefix.FCM_TOKEN + username, token);
+        // FCM 토큰 30일 동안 저장
+        redisRepository.saveWithExpiration(RedisKeyPrefix.FCM_TOKEN + username, token, 30, TimeUnit.DAYS);
     }
 }

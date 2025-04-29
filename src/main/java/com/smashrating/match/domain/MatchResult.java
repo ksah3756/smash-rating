@@ -11,6 +11,9 @@ import lombok.*;
 @Builder
 @Getter
 @Entity
+@Table(
+        indexes = @Index(name = "idx_match_result_created_at", columnList = "created_at")
+)
 public class MatchResult extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

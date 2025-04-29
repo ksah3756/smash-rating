@@ -17,13 +17,13 @@ public class PendingMatchRequestEvent {
 
     public static PendingMatchRequestEvent of(String receiverUsername, String senderNickname, String senderRealName) {
         if(receiverUsername == null || receiverUsername.isBlank()) {
-            throw new CustomException(CommonErrorCode.INVALID_PARAMETER, "Username cannot be null or empty");
+            throw new CustomException(CommonErrorCode.INVALID_PARAMETER, "Receiver username cannot be null or empty");
         }
         if (senderNickname == null || senderNickname.isBlank()) {
-            throw new CustomException(CommonErrorCode.INVALID_PARAMETER, "Receiver nickname cannot be null or empty");
+            throw new CustomException(CommonErrorCode.INVALID_PARAMETER, "Sender nickname cannot be null or empty");
         }
         if (senderRealName == null || senderRealName.isBlank()) {
-            throw new CustomException(CommonErrorCode.INVALID_PARAMETER, "Receiver real name cannot be null or empty");
+            throw new CustomException(CommonErrorCode.INVALID_PARAMETER, "Sender real name cannot be null or empty");
         }
         return new PendingMatchRequestEvent(receiverUsername, senderNickname, senderRealName);
     }
