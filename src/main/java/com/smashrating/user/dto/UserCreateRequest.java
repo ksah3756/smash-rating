@@ -3,7 +3,9 @@ package com.smashrating.user.dto;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -29,6 +31,11 @@ public record UserCreateRequest(
         String nickname,
 
         @NotBlank
+        @Email
+        @Pattern(
+                regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$",
+                message = "올바른 이메일 주소를 입력해주세요."
+        )
         String email
 ) {
 }
