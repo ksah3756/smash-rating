@@ -4,6 +4,7 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.*;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -15,7 +16,6 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.List;
-import java.util.Set;
 
 @Slf4j
 @RestControllerAdvice
@@ -26,11 +26,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         log.warn("CustomException 예외 발생, msg:{}", e.getMessage());
         ErrorCode errorCode = e.getErrorCode();
         int errorCodeValue = errorCode.getStatus().value();
-//        if(errorCode == ErrorCode.WEBCLIENT_ERROR)
-//            return ResponseEntity.status(HttpStatus.valueOf(errorCodeValue))
-//                    .contentType(MediaType.APPLICATION_JSON)
-//                    .body(createErrorResponse(errorCode, e.getMessage()));
+
         return ResponseEntity.status(HttpStatus.valueOf(errorCodeValue))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(createErrorResponse(errorCode));
+    }
+
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity<ErrorResponse> handleDataAccessException(DataAccessException e) {
+        log.error("DataAccessException 예외 발생", e);
+        ErrorCode errorCode = CommonErrorCode.DATABASE_ERROR;
+
+        return ResponseEntity.status(errorCode.getStatus())
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(createErrorResponse(errorCode));
     }
@@ -39,6 +46,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ErrorResponse> handleValidationException(ConstraintViolationException e) {
         log.warn("ConstraintViolationException 예외 발생, msg:{}", e.getMessage());
         ErrorCode errorCode = CommonErrorCode.VALIDATION_ERROR;
+
         return ResponseEntity.status(HttpStatus.valueOf(errorCode.getStatus().value()))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(createErrorResponse(errorCode, e.getMessage()));

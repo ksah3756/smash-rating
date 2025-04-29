@@ -1,6 +1,7 @@
 package com.smashrating.auth.config;
 
 import com.smashrating.auth.application.LoginService;
+import com.smashrating.auth.filter.JwtExceptionHandlingFilter;
 import com.smashrating.auth.filter.LoginFilter;
 import com.smashrating.auth.handler.LoginSuccessHandler;
 import com.smashrating.auth.jwt.JwtParser;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -33,6 +35,7 @@ import java.util.Collections;
 @EnableWebSecurity
 @RequiredArgsConstructor
 @Slf4j
+@Profile({"!test"})
 public class SecurityConfig {
     private final JwtParser jwtParser;
     private final JwtProvider jwtProvider;
@@ -47,12 +50,6 @@ public class SecurityConfig {
                         corsConfigurer.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
-                .exceptionHandling(handler ->
-                        handler.authenticationEntryPoint((request, response, authException) -> {
-                            log.error("Unauthorized error: {}", authException.getMessage());
-                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());
-                        })
-                )
                 .formLogin(AbstractHttpConfigurer::disable) // UsernamePasswordAuthenticationFilter disable
                 .oauth2Login(oauth2 ->
                         oauth2.userInfoEndpoint(userInfo -> userInfo.userService(oAuth2LoginUserService))
@@ -63,6 +60,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtExceptionHandlingFilter(), JwtAuthenticationFilter.class)
                 .addFilterBefore(loginFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(SWAGGER_PATTERNS).permitAll()
@@ -70,6 +68,16 @@ public class SecurityConfig {
                         .requestMatchers(PERMIT_ALL_PATTERNS).permitAll()
                         .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setContentType("application/json");
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "{\"code\":\"UNAUTHORIZED\",\"message\":\"인증이 필요합니다.\"}");
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setContentType("application/json");
+                            response.sendError(HttpServletResponse.SC_FORBIDDEN, "{\"code\":\"FORBIDDEN\",\"message\":\"접근 권한이 없습니다.\"}");
+                        })
                 );
 
         return http.build();
@@ -98,6 +106,7 @@ public class SecurityConfig {
 
     private static final String[] PUBLIC_ENDPOINTS = {
         "/user/register",
+        "/user/login",
     };
 
     CorsConfigurationSource corsConfigurationSource() {
@@ -118,6 +127,10 @@ public class SecurityConfig {
 
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
         return new JwtAuthenticationFilter(jwtParser);
+    }
+
+    public JwtExceptionHandlingFilter jwtExceptionHandlingFilter() {
+        return new JwtExceptionHandlingFilter();
     }
 
     @Bean

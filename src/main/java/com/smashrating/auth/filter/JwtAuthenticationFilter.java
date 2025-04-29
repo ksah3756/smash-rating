@@ -1,5 +1,6 @@
 package com.smashrating.auth.filter;
 
+import com.smashrating.auth.dto.UserPrincipal;
 import com.smashrating.auth.jwt.JwtParser;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -32,10 +33,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         for(Cookie cookie : cookies) {
             if (cookie.getName().equals("accessToken")) {
                 String token = cookie.getValue();
-                if (jwtParser.validateToken(token)) {
-                    Authentication authentication = jwtParser.getAuthentication(token);
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                }
+                // 토큰 검증 실패 시 AuthException이 발생하며, JwtExceptionHandlingFilter에서 처리
+                jwtParser.validateToken(token);
+                Authentication authentication = jwtParser.getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
 

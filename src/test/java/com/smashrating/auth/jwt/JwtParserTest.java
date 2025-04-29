@@ -1,8 +1,10 @@
 package com.smashrating.auth.jwt;
 
 import com.smashrating.auth.enums.util.JwtUtils;
+import com.smashrating.auth.exception.AuthException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -10,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,14 +44,16 @@ class JwtParserTest {
     void init() {
         // 유효한 토큰 생성: subject, username, role 값을 포함
         validUserToken = Jwts.builder()
-                .setSubject("testUser")
+                .subject("testUser")
+                .claim("id", 1L)
                 .claim("username", "testUser")
                 .claim("role", "USER")
                 .signWith(key)
                 .compact();
 
         validAdminToken = Jwts.builder()
-                .setSubject("adminUser")
+                .subject("adminUser")
+                .claim("id", 2L)
                 .claim("username", "adminUser")
                 .claim("role", "ADMIN")
                 .signWith(key)
@@ -59,19 +64,33 @@ class JwtParserTest {
     }
 
     @Test
-    @DisplayName("유효한 토큰이 주어지면 true를 반환한다.")
-    void validateToken_returnsTrueForValidToken() {
-        // 유효한 토큰 생성: subject, username, role 값을 포함
-        boolean valid = jwtParser.validateToken(validUserToken);
-        assertThat(valid).isTrue();
+    @DisplayName("유효한 토큰이 주어지면 예외를 반환하지 않고 넘어간다.")
+    void validateToken_validToken() {
+        jwtParser.validateToken(validUserToken);
     }
 
     @Test
-    @DisplayName("유효하지 않은 토큰이 주어지면 false를 반환한다.")
-    void validateToken_returnsFalseForInvalidToken() {
-        // 의미없는 토큰 문자열
-        boolean valid = jwtParser.validateToken(invalidToken);
-        assertThat(valid).isFalse();
+    @DisplayName("유효하지 않은 토큰이 주어지면 예외를 던진다.")
+    void validateToken_invalidToken() {
+        Assertions.assertThatThrownBy(() -> jwtParser.validateToken(invalidToken))
+                        .isInstanceOf(AuthException.class)
+                        .hasMessageContaining("Invalid token");
+    }
+
+    @Test
+    @DisplayName("만료된 토큰이 주어지면 예외를 던진다.")
+    void validateToken_expiredToken() {
+        String expiredToken = Jwts.builder()
+                .subject("testUser")
+                .claim("username", "testUser")
+                .claim("role", "USER")
+                .expiration(new Date(System.currentTimeMillis() - 1000))
+                .signWith(key)
+                .compact();
+
+        Assertions.assertThatThrownBy(() -> jwtParser.validateToken(expiredToken))
+                        .isInstanceOf(AuthException.class)
+                        .hasMessageContaining("Expired token");
     }
 
     @Test
@@ -88,6 +107,7 @@ class JwtParserTest {
     @DisplayName("관리자 JWT에서 Authentication 토큰을 추출한다.")
     void getAuthentication_adminToken() {
         var authentication = jwtParser.getAuthentication(validAdminToken);
+
         assertThat(authentication).isNotNull();
         assertThat(authentication.getName()).isEqualTo("adminUser");
         assertThat(authentication.getAuthorities()).extracting("authority")
